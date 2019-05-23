@@ -8,7 +8,7 @@ In this section, we discuss the experimental results of DDS on both image classi
 For image classification, we use CIFAR-10~\citep{cifar10} and ImageNet~\citep{imagenet}. For each dataset, we consider two settings: a reduced setting where only roughly 10\% of the training labels are used, and a full setting, where all labels are used. Specifically, the reduced setting for CIFAR-10 uses the first $4000$ examples in the training set, and with ImageNet, the reduced setting uses the first $102$ TFRecord shards as pre-processed by~\citet{imagenet_generalize_better}. We use the size of $224 \times 224$ for ImageNet.
 
 For multilingual NMT, we use the 58-language-to-English TED dataset~\citep{ted_pretrain_emb}. 
-Following prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,SDE}, we evaluate translation from four low-resource languages~(LRL) Azerbaijani~(aze), Belarusian~(bel), Galician~(glg), and Slovak~(slk) to English, where each is paired with a similar high-resource language Turkish~(tur), Russian~(rus), Portugese~(por), and Czech~(ces) (details in Appendix~\ref{app:nmt_data}).
+Following prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,SDE}, we evaluate translation from four low-resource languages~(LRL) Azerbaijani~(\texttt{aze}), Belarusian~(\texttt{bel}), Galician~(\texttt{glg}), and Slovak~(\texttt{slk}) to English, where each is paired with a similar high-resource language Turkish~(\texttt{tur}), Russian~(\texttt{rus}), Portugese~(\texttt{por}), and Czech~(\texttt{ces}) (details in Appendix~\ref{app:nmt_data}).
 We use combine data from all 8 languages, and use DDS to optimize data selection for each LRL. 
 
 \paragraph{Image Classification Models and Training Details.}
