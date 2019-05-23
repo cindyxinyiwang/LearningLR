@@ -32,7 +32,7 @@ Since we can assume that the data in $\mathcal{D}_\text{dev}$ is a better approx
 
 % \an{The `we' in this paragraph is not the same as the `we' in the next paragraph. I think we shouldn't use `we' in the first one. Maybe `one' or a scientist... `she'}
 
-Specifically, we propose to replace the distribution $\text{Uniform}(\mathcal{D}_\text{train})$, with a parameterized distribution $p(X, Y; \psi)$ with support of $\mathcal{D}_\text{train}$ that brings the sampled data closer to $P_\text{dev}(X, Y)$ than when selected using the uniform distribution. In particular, $\mathcal{D}_\text{train}$ will be sampled by $\langle x, y \rangle \sim p(X, Y; \psi)$, 
+Specifically, we propose to replace the distribution $\text{Uniform}(\mathcal{D}_\text{train})$, with a parameterized distribution $p(X, Y; \psi)$ with support of $\mathcal{D}_\text{train}$ that brings the sampled data closer to $P_\text{dev}(X, Y)$ than when selected using the uniform distribution. In particular, data will be sampled by $\langle x, y \rangle \sim p(X, Y; \psi)$, 
 and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, p(X, Y;\psi))$ will approximately minimize $J(\theta, P_\text{dev}(X,Y))$: 
 %\gn{A little pedantic, but $\psi$ isn't included anywhere in Eqn~\ref{eqn:generic_optim}. I think one easy way to fix this is instead of having $P(X,Y)$ be the true data distribution (unknown), you could have it be ``an arbitrary distribution''. Then you could say that ``ideally, this would match the true data distribution, but unfortunately this is not known''} 
 \begin{equation}
@@ -45,11 +45,11 @@ and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, p(X, Y;\p
     \theta^*(\psi) = \argmin_\theta \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[ \ell(x, y; \theta) \right]
   \end{aligned}
 \end{equation}
-Directly optimizing for $\psi^*$ as above is prohibitively expensive, since finding $\argmin_\theta J(\theta)$ is by itself an expensive process, \eg~training a big neural network on a big dataset. 
+Directly optimizing for $\psi^*$ as above is prohibitively expensive, since finding $\argmin_\theta J(\theta)$ is by itself an expensive process, \eg~training a large neural network on a large dataset. 
 Thus, we establish a mathematical formulation, which allows $\theta$ and $\psi$ to both be trained by stochastic gradient updates. As our method trains a differentiable distribution $p(X, Y; \psi)$ to select training data, we name the method \textit{Differentiable Data Selection}~(\dds).
 
 \subsection{\label{sec:diff_data_selection}Framework}
-For the rest of the section, we simply write the training objective $J(\theta, p(X, Y;\psi))$ as $J(\theta, \psi)$ for ease of notation. Similarly, we abbreviate the risk $J(\theta, \text{Uniform}(\mathcal{D}))$ over a dataset $\mathcal{D}$ as $J(\theta, \mathcal{D})$.
+For the rest of the section, we abbreviate the training objective $J(\theta, p(X, Y;\psi))$ as $J(\theta, \psi)$ for ease of notation. Similarly, we abbreviate the risk $J(\theta, \text{Uniform}(\mathcal{D}))$ over a dataset $\mathcal{D}$ as $J(\theta, \mathcal{D})$.
 
 For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochastic gradient update. Specifically, at time step $t$, we update
 \begin{equation}
@@ -61,7 +61,7 @@ For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochast
 \end{equation}
 where $g(\cdot)$ is any function that may be applied to the gradient $\nabla_\theta J(\theta_{t-1}, \psi)$. For instance, in standard gradient descent $g(\cdot)$ is simply a linear scaling of $\nabla_\theta J(\theta_{t-1}, \psi)$ by a learning rate $\eta_t$, while with the Adam optimizer~\citep{adam} $g$ also modifies the learning rate on a parameter-by-parameter basis.
 
-We now analyze how a stochastic update as in Eqn~\ref{eqn:theta_update_rule} affects $J(\theta_t, \mathcal{D}_{\text{dev}})$. 
+We now analyze how a gradient update as in Eqn~\ref{eqn:theta_update_rule} affects $J(\theta_t, \mathcal{D}_{\text{dev}})$. 
 %\gn{Here, and in all following mentions, I think this should be $J(\theta, \mathcal{D}_{\text{dev}})$?}. \cw{eqn \ref{eqn:two_step_update} operates on $\ell(\mathbb{D}_\text{dev})$ so maybe it's easier to just use this?}
 %\gn{Do we even need the following sentence? We're already calculating the gradient in Eqn~\ref{eqn:theta_update_rule}, so if we've already assumed $J(\cdot)$ is differentiable there, we can probably assume so here as well.} \cw{It might be worth it to mention it here, since eqn\ref{eqn:theta_update_rule} does not mention $\ell(\mathbb{D}_\text{dev})$} 
 %\gn{Sometimes you're using $\theta_t$ and sometimes $\theta$. I'd be consistent (always use $\theta_t$)?} %To achieve this, we assume that $\ell(\mathcal{D}_\text{dev}; \theta_t)$ is differentiable with respect to $\theta_t$. This is not an unreasonable assumption,~\eg~log-likelihood objectives generally used in most neural prediction models are usually differentiable with respect to $\theta_t$. 
@@ -92,8 +92,8 @@ where $\eta_\psi$ is the learning rate for $\psi$, which is a hyper-parameter. N
 %\gn{haha, a little more detail might be warranted here :) ``prior work on XXX (cite), YYY (cite), and ZZZ (cite)}. 
 However, we are the first to utilize the idea for data selection to reduce discrepancy between the training and dev sets. 
 
-One reasonable concern may be raised with this approach, in that we optimize $\psi_t$ directly on the dev set using $J(\theta_t, \mathcal{D}_\text{dev})$, which may risk indirectly overfitting model parameters $\theta_t$ by selecting a small subset of data that is overly specialized.
-However we do not observe this problem in practice, and posit that this because (1) the influence of $\psi_t$ on the final model parameters $\theta_t$ is quite indirect, and acts as a ``bottleneck'' which has similarly proven useful for preventing overfitting in neural models \cite{grezl2007probabilistic}, and (2) because the actual implementations of DDS~(which we further discuss in Section \ref{sec:formualtion}) only sample a subset of data from $\mathcal{D}_\text{dev}$ at each optimization step, further limiting expressivity.
+One reasonable concern that may be raised with this approach is that because we optimize $\psi_t$ directly on the dev set using $J(\theta_t, \mathcal{D}_\text{dev})$, we may risk indirectly overfitting model parameters $\theta_t$ by selecting a small subset of data that is overly specialized.
+However we do not observe this problem in practice, and posit that this because (1) the influence of $\psi_t$ on the final model parameters $\theta_t$ is quite indirect, and acts as a ``bottleneck'' which has similarly proven useful for preventing overfitting in neural models \cite{grezl2007probabilistic}, and (2) because the actual implementations of DDS~(which we further discuss in Section \ref{sec:formualtion}) only samples a subset of data from $\mathcal{D}_\text{train}$ at each optimization step, further limiting expressivity.
 %\gn{Let me revive Paul's comment here: I think this is an important discussion (I believe I also brought this up when speaking with Cindy, independently of Paul, so this is definitely something people paying attention will notice). Let's try to add this somewhere, perhaps at the end of this section.}
 %\paul{One central comment here: one could argue that if your goal is to minimize $\ell_\text{dev}(\theta)$ you could just do gradient descent on the dev set (which is bad of course), furthermore under mild conditions \footnote{if $\ell_{\text{dev}}$ is within the linear span of all $\ell_{\text{train}}$ which is the case if $N>d$ and the gradients are linearly independent, and provided $p(\ldots;\psi)$ is sufficently expressive} it is in theory possible that you learn $\psi$ such that $\nabla J = \nabla \ell_{\text{dev}}$ . Therefore there needs to be some kind of regularization on $\psi$ such that this is not the case. Obviously your experimental result show that there is some kind of implicit regularization in your choice of model for $p(\ldots ; \psi)$ but it would be better to formulate this more explicitly, because this is for sure something that a reviewer might point out.}
 
