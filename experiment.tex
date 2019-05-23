@@ -2,106 +2,159 @@
 %\gn{You need at least one sentence of lead-in here.}
 In this section, we first discuss the experimental results of DDS on image classification, an instance of the general classification problem using Algorithm \ref{alg:image_classification_dds}. Then we demonstrate the effectiveness of DDS on a special case of multilingual NMT using Algorithm \ref{alg:nmt_dds}.
 
-\subsection{\label{exp:image_classification}Image Classification}
+\subsection{\label{exp:settings}Experimental Settings}
 
-\paragraph{Settings.} We apply our method on two established image classification datasets, CIFAR-10~\citep{cifar10} and ImageNet~\citep{imagenet}. For each dataset, we consider two settings: a reduced setting where only roughly 10\% of the training labels are used, and a full setting, where all labels are used. Specifically, the reduced setting for CIFAR-10 uses the first $4000$ examples in the training set, and with ImageNet, the reduced setting uses the first $102$ TFRecord shards as pre-processed by~\citet{imagenet_generalize_better}. We use the size of $224 \times 224$ for ImageNet.
+\paragraph{Data.} We apply our method on established benchmarks for image classification and multilingual NMT.
+For image classification, we use CIFAR-10~\citep{cifar10} and ImageNet~\citep{imagenet}. For each dataset, we consider two settings: a reduced setting where only roughly 10\% of the training labels are used, and a full setting, where all labels are used. Specifically, the reduced setting for CIFAR-10 uses the first $4000$ examples in the training set, and with ImageNet, the reduced setting uses the first $102$ TFRecord shards as pre-processed by~\citet{imagenet_generalize_better}. We use the size of $224 \times 224$ for ImageNet.
 
-\paragraph{Models and Baselines.} For CIFAR-10, we use the pre-activation WideResNet-28~\citep{wide_res_net}, with a width factor $k=2$ for the reduced setting and $k=10$ for the normal setting. For ImageNet, we use the post-activation ResNet-50~\citep{res_net}. Our baselines are the standard implementations of these models, where we reproduce the numbers commonly reported in the literature~\citep{wide_res_net,res_net,resnext}.
+For multilingual NMT, we use the 58-language-to-English TED dataset~\citep{ted_pretrain_emb}. 
+Following prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,SDE}, we evaluate translation from four low-resource languages~(LRL) Azerbaijani~(aze), Belarusian~(bel), Galician~(glg), and Slovak~(slk) to English, where each is paired with a similar high-resource language Turkish~(tur), Russian~(rus), Portugese~(por), and Czech~(ces) (details in Appendix~\ref{app:nmt_data}).
+We use combine data from all 8 languages, and use DDS to optimize data selection for each LRL. 
 
-\paragraph{Training details.} The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 200K steps and 40K steps, respectively. We use the standard Momentum update for the DDS model parameter $\theta$, and the derived Momentum update rule in Section~\ref{sec:grad_of_optimizers} for the DDS distribution parameter $\psi$ 
-, both with the momentum rate of $0.9$. Additional training details can be found in Appendix \ref{app:image_hparam}.
+\paragraph{Image Classification Models and Training Details.}
+For CIFAR-10, we use the pre-activation WideResNet-28~\citep{wide_res_net}, with a width factor $k=2$ for the reduced setting and $k=10$ for the normal setting. For ImageNet, we use the post-activation ResNet-50~\citep{res_net}.
+These implementations reproduce the numbers commonly reported in the literature~\citep{wide_res_net,res_net,resnext}, and additional training details can be found in Appendix \ref{app:image_hparam}.
+The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 200K steps and 40K steps, respectively. We use the standard Momentum update for the DDS model parameter $\theta$, and the derived Momentum update rule in Section~\ref{sec:grad_of_optimizers} for the DDS distribution parameter $\psi$, both with the momentum rate of $0.9$.
 
-Our experiments are conducted on the second generation of Tensor Processing Units (TPUv2). We discuss three important implementation details to improve the training efficiency of ImageNet models. First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the distribution model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the distribution model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example 
+Our experiments were conducted on second-generation Tensor Processing Units (TPUv2). There were several important implementation details related to improving training efficiency with DDS for ImageNet models (these were not needed for the smaller CIFAR-10 training set). First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the DDS model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the DDS model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example.
+
+\paragraph{Multilingual NMT Models and Training Details.}
+For multi-lingual NMT, we use a standard LSTM-based attentional baseline \cite{bahdanau}, similar to those previously used on this dataset \cite{rapid_adapt_nmt}.
+We optimize both the NMT and DDS models with Adam, using learning rates of 0.001 and 0.0001 for $\theta$ and $\psi$ respectively.
+Accuracy is measured using BLEU score \cite{papineni}.
+More details are noted in Appendix \ref{app:nmt_hparam}.
+
+\paragraph{Data Selection Methods.}
+For both image classification and multi-lingual NMT, we compare the following data selection methods.
+\textbf{Uniform} where data is selected uniformly from all of the data that we have available, as is standard in training models.
+\textbf{DDS}, our proposed method.
+
+For machine translation, we also compare with two state-of-the-art heuristic methods for multi-lingual data selection.
+\textbf{Related} where data is selected uniformly from the target LRL and a linguistically related HRL, the choice of which requires deep domain knowledge \cite{rapid_adapt_nmt}.
+\textbf{TCS}, a recently proposed method of ``target conditioned sampling'', which uniformly chooses target sentences, then picks which source sentence to use based on heuristics such as word overlap \cite{TCS}.
+Note that TCS takes advantage of the structural properties of the multilingual NMT problem, and does not generalize to other problems such as classification.
+We also experiment with a hybrid \textbf{TCS+DDS} of our proposed method and TCS, where we initialize the parameters of DDS with the TCS heuristic, then continue training.
+
+% \paragraph{Data Selection Baselines.} We compare our method against three strong baselines: 1) All: all 8 languages are used for training without any data selection; 2) Bi: we train on the combined datasets of each LRL and its related HRL, which is a special case of data selection that requires prior linguistic knowledge; 3) TCS~\citep{TCS}: the state-of-the-art data selection method for multilingual NMT. Given a target sentence, TCS conditionally samples a source sentence from the candidate languages based on simple heuristics such as vocabulary overlap.
+
 %\gn{Just a comment: I'm not a huge fan of this because it seems a bit hacky, but if it's what was necessary to make things work this time then that's fair}. 
-We note that all these three tricks are not needed for our experiments on CIFAR-10, where the batch size is much smaller.
+% We note that all these three tricks are not needed for our experiments on CIFAR-10, where the batch size is much smaller.
 
-\begin{wraptable}{r}{0.6\textwidth}
-%\begin{adjustbox}{max width=0.7\textwidth}
-\vspace{-1cm}
-\resizebox{0.6\textwidth}{!}{
-  \begin{tabular}{llll}
-    \multicolumn{4}{c}{\textbf{CIFAR-10} ($\text{mean} \pm \text{std}$ over $10$ runs)} \\
-  \toprule
-    \textbf{Portion} &
-    \textbf{Model} &
-    \textbf{Baseline} &
-    \textbf{\dds}
-    \\
-  \midrule
-    4K &
-    WideResNet-28-2 &
-    $82.60 \pm 0.17$ & % 6109331
-    $\mathbf{83.63 \pm 0.29}$ % 6109486
-    \\
-    Full &
-    WideResNet-28-10 &
-    $95.55 \pm 0.15$ &  % 6153155
-    $\mathbf{96.31 \pm 0.13}$  % 6170380
-    \\
-  \bottomrule
-    \\
-    \multicolumn{4}{c}{\textbf{ImageNet} ($\text{Top-1}/\text{Top-5}$)} \\
+\subsection{Main Results}
+
+\begin{table}
+\begin{center}
+\vspace{-0.5cm}
+    \begin{tabular}{l|cccc|cccc}
     \toprule
-    \textbf{Portion} &
-    \textbf{Model} &
-    \textbf{Baseline} &
-    \textbf{\dds}
-    \\
-  \midrule
-    10\%  & ResNet-50 &
-    $56.36 / 79.45$ & % 5267621/workUnits/118
-    $\mathbf{56.81 / 79.51}$   % 6020481/workUnits/18
-    \\  
-    Full & ResNet-50 &
-    $76.51 / 93.20$ & % https://arxiv.org/abs/1810.12890
-    $\mathbf{77.23 / 93.57}$ % 6800564/workUnits/39
-    \\
+                   & \multicolumn{2}{|c}{CIFAR-10} & \multicolumn{2}{c}{ImageNet} & \multicolumn{4}{|c}{Multilingual NMT} \\
+    \textbf{Model} & \textbf{4K} & \textbf{Full} & \textbf{10\%} & \textbf{Full} & \textbf{aze} & \textbf{bel} & \textbf{glg} & \textbf{slk} \\
+    \midrule
+    Uniform        & 82.60 & 95.55 & 56.36 / 79.45 & 76.51 / 93.20                                                       & 10.31 & 17.21 & 26.05 & 27.44 \\
+    Related        & \multicolumn{4}{|c|}{-}                                                                              & 10.34 & 15.31 & 27.41 & 25.92 \\
+    TCS            & \multicolumn{4}{|c|}{-}                                                                              & 11.18 & 16.97 & 27.28 & 27.72 \\
+    \midrule
+    DDS            & \textbf{83.63} & \textbf{96.31} & \textbf{56.81} / \textbf{79.51} & \textbf{77.23} / \textbf{93.57} & 10.74 & 17.24 & 27.32 & \textbf{28.20} \\
+    TCS+DDS        & \multicolumn{4}{|c|}{-}                                                                              & \textbf{11.84} & \textbf{17.74} & \textbf{27.78} & 27.74 \\
+    %Uniform & 9.54 & 14.75 & 25.11 & 26.30 \\
     \bottomrule
-  \end{tabular}
-}
-  \captionof{table}{\label{tab:image_classification_results}Image classification accuracy. Higher is better.}
-%\end{adjustbox}
-%\end{center}
-\end{wraptable}
+    \end{tabular}
+     \captionof{table}{\label{tab:results} Results for image classification accuracy (left) and multilingual MT BLEU (right)}
+\end{center}
+\vspace{-0.5cm}
+\end{table}
 
-\paragraph{Results.} Results are presented in Table~\ref{tab:image_classification_results}. As can be seen, \dds~improves the performance of all tasks considered. The best improvement is for CIFAR-10 using 4K labels. We posit that this is because when the  
+
+% \begin{wraptable}{r}{0.6\textwidth}
+% %\begin{adjustbox}{max width=0.7\textwidth}
+% \vspace{-1cm}
+% \resizebox{0.6\textwidth}{!}{
+%   \begin{tabular}{llll}
+%     \multicolumn{4}{c}{\textbf{CIFAR-10} ($\text{mean} \pm \text{std}$ over $10$ runs)} \\
+%   \toprule
+%     \textbf{Portion} &
+%     \textbf{Model} &
+%     \textbf{Baseline} &
+%     \textbf{\dds}
+%     \\
+%   \midrule
+%     4K &
+%     WideResNet-28-2 &
+%     $82.60 \pm 0.17$ & % 6109331
+%     $\mathbf{83.63 \pm 0.29}$ % 6109486
+%     \\
+%     Full &
+%     WideResNet-28-10 &
+%     $95.55 \pm 0.15$ &  % 6153155
+%     $\mathbf{96.31 \pm 0.13}$  % 6170380
+%     \\
+%   \bottomrule
+%     \\
+%     \multicolumn{4}{c}{\textbf{ImageNet} ($\text{Top-1}/\text{Top-5}$)} \\
+%     \toprule
+%     \textbf{Portion} &
+%     \textbf{Model} &
+%     \textbf{Baseline} &
+%     \textbf{\dds}
+%     \\
+%   \midrule
+%     10\%  & ResNet-50 &
+%     $56.36 / 79.45$ & % 5267621/workUnits/118
+%     $\mathbf{56.81 / 79.51}$   % 6020481/workUnits/18
+%     \\  
+%     Full & ResNet-50 &
+%     $76.51 / 93.20$ & % https://arxiv.org/abs/1810.12890
+%     $\mathbf{77.23 / 93.57}$ % 6800564/workUnits/39
+%     \\
+%     \bottomrule
+%   \end{tabular}
+% }
+%   \captionof{table}{\label{tab:image_classification_results}Image classification accuracy. Higher is better.}
+% %\end{adjustbox}
+% %\end{center}
+% \end{wraptable}
+
+% \paragraph{Results.} Results are presented in Table~\ref{tab:image_classification_results}. As can be seen, \dds~improves the performance of all tasks considered. The best improvement is for CIFAR-10 using 4K labels. We posit that this is because when the  
 %\gn{The following explanation is pretty weak because increasing the degrees of freedom of the model was not even one of our original motivations. Is there any way we can at least say something about how it (might be?) reducing the weight on outliers or something like that?} In our intuitions, \dds~provides an extra degree of freedom to train the models, namely the per-example scaling of gradients. This extra degree of freedom is well-utilized by the $p(\hat{x}, \hat{y}; \psi)$ distribution, leading to the improvements.
 
 
-\subsection{Multilingual NMT}
-\paragraph{Dataset.}
-We use the 58-language-to-English TED dataset~\citep{ted_pretrain_emb}. 
-Following setups in prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,SDE}, we use three low-resource languages~(LRL) Azerbaijani~(aze), Belarusian~(bel), Galician~(glg) to English,
-and a slightly higher-resource dataset, Slovak~(slk) to English. Each language is paired with its most related high-resource language~(HRL), namely Turkish~(tur), Russian~(rus), Portugese~(por), and Czech~(ces) respectively, with the statistics of the datasets listed in Appendix~\ref{app:nmt_data}. Our goal is to optimize the usage of the data from the 8 languages for training NMT models for each LRL. 
+% \subsection{Multilingual NMT}
+% 
+% \paragraph{Baselines.} We compare our method against three strong baselines: 1) All: all 8 languages are used for training without any data selection; 2) Bi: we train on the combined datasets of each LRL and its related HRL, which is a special case of data selection that requires prior linguistic knowledge; 3) TCS~\citep{TCS}: the state-of-the-art data selection method for multilingual NMT. Given a target sentence, TCS conditionally samples a source sentence from the candidate languages based on simple heuristics such as vocabulary overlap.
+% 
+% \paragraph{Implementation.} Here we clarify several design choices for Algorithm \ref{alg:nmt_dds}. To model the distribution $p(S_i|y;\psi)$, we use a 2-layer feed-forward network with hidden size of 32. The input vector for the network is a vector of size of source languages $n$, representing which of the languages contain a corresponding source sentence for a given target sentence $y$. We use the standard Adam update rule with learning rate of 0.001 for the NMT model parameter $\theta$, and the derived Adam update rule from Section~\ref{sec:grad_of_optimizers} with learning rate~0.0001 for the distribution parameter $\psi$. 
+% 
+% We test two different settings for using DDS for multilingual  NMT: 1) TCS+DDS: we pretrain the network with the heuristic distribution from TCS before the DDS training process
+% %. K in Algorithm \ref{alg:nmt_dds} is set to be 50,000; 
+% 2) Uniform+DDS: we train the network for $\psi$ from scratch. %At the start of training, K is set to be 5,000 to encourage exploration; after updating $\psi$ for 5 times, we also set it to 50,000.
+% We run all experiments with 3 different random seeds and pick the median for each method. Additional hyperparameters are listed in Appendix~\ref{app:nmt_hparam}.
+% 
+% \paragraph{Results.}
+% \begin{wraptable}{l}{0.6\textwidth}
+% \begin{center}
+% \vspace{-0.5cm}
+%     \begin{tabular}{l|cccc}
+%     \toprule
+%     \textbf{Model} & \textbf{aze} & \textbf{bel} & \textbf{glg} & \textbf{slk} \\
+%     \midrule
+%     All & 10.31 & 17.21 & 26.05 & 27.44 \\
+%     Bi & 10.34 & 15.31 & 27.41 & 25.92 \\
+%     TCS & 11.18 & 16.97 & 27.28 & 27.72 \\
+%     \midrule
+%     TCS+DDS & \textbf{11.84} & \textbf{17.74} & \textbf{27.78} & 27.74 \\
+%     %Uniform & 9.54 & 14.75 & 25.11 & 26.30 \\
+%     Uniform+DDS & 10.74 & 17.24 & 27.32 & \textbf{28.20} \\
+%     \bottomrule
+%     \end{tabular}
+%      \captionof{table}{\label{tab:nmt_result}BLEU score. Higher is better.}
+% \end{center}
+% \vspace{-0.5cm}
+% \end{wraptable}
 
-\paragraph{Baselines.} We compare our method against three strong baselines: 1) All: all 8 languages are used for training without any data selection; 2) Bi: we train on the combined datasets of each LRL and its related HRL, which is a special case of data selection that requires prior linguistic knowledge; 3) TCS~\citep{TCS}: the state-of-the-art data selection method for multilingual NMT. Given a target sentence, TCS conditionally samples a source sentence from the candidate languages based on simple heuristics such as vocabulary overlap.
+The results of the baselines and our method are listed in Table \ref{tab:results}.
+First, comparing the standard baseline strategy of ``Uniform'' and the proposed method of ``DDS'' we can see that in all 8 settings DDS improves over the uniform baseline.
+This is a strong indication of both the consistency of the improvements that DDS can provide, and the generality -- it works well in two very different settings.
 
-\paragraph{Implementation.} Here we clarify several design choices for Algorithm \ref{alg:nmt_dds}. To model the distribution $p(S_i|y;\psi)$, we use a 2-layer feed-forward network with hidden size of 32. The input vector for the network is a vector of size of source languages $n$, representing which of the languages contain a corresponding source sentence for a given target sentence $y$. We use the standard Adam update rule with learning rate of 0.001 for the NMT model parameter $\theta$, and the derived Adam update rule from Section~\ref{sec:grad_of_optimizers} with learning rate~0.0001 for the distribution parameter $\psi$. 
-
-We test two different settings for using DDS for multilingual  NMT: 1) TCS+DDS: we pretrain the network with the heuristic distribution from TCS before the DDS training process
-%. K in Algorithm \ref{alg:nmt_dds} is set to be 50,000; 
-2) Uniform+DDS: we train the network for $\psi$ from scratch. %At the start of training, K is set to be 5,000 to encourage exploration; after updating $\psi$ for 5 times, we also set it to 50,000.
-We run all experiments with 3 different random seeds and pick the median for each method. Additional hyperparameters are listed in Appendix~\ref{app:nmt_hparam}.
-
-\paragraph{Results.}
-\begin{wraptable}{l}{0.6\textwidth}
-\begin{center}
-\vspace{-0.5cm}
-    \begin{tabular}{l|cccc}
-    \toprule
-    \textbf{Model} & \textbf{aze} & \textbf{bel} & \textbf{glg} & \textbf{slk} \\
-    \midrule
-    All & 10.31 & 17.21 & 26.05 & 27.44 \\
-    Bi & 10.34 & 15.31 & 27.41 & 25.92 \\
-    TCS & 11.18 & 16.97 & 27.28 & 27.72 \\
-    \midrule
-    TCS+DDS & \textbf{11.84} & \textbf{17.74} & \textbf{27.78} & 27.74 \\
-    %Uniform & 9.54 & 14.75 & 25.11 & 26.30 \\
-    Uniform+DDS & 10.74 & 17.24 & 27.32 & \textbf{28.20} \\
-    \bottomrule
-    \end{tabular}
-     \captionof{table}{\label{tab:nmt_result}BLEU score. Higher is better.}
-\end{center}
-\vspace{-0.5cm}
-\end{wraptable}
-The results of the baselines and our method are listed in Table \ref{tab:nmt_result}. In our setting, training on all 8 languages (All) performs better than using a single related language (Bi) on~2 of the~4 languages, probably because the number of languages in the training corpus is not very large. However, the All method requires significantly more training steps than the other methods, and has found to be worse than Bi when the number of training languages is large~\citep{rapid_adapt_nmt,TCS}. The heuristic-based data selection method (TCS) effectively improves over or performs comparably with the Bi baseline. In general, DDS outperforms all strong baselines on all 4 languages. When the data selection distribution is initialized with the heuristics from TCS, it consistently improves over TCS on all 4 languages~(TCS+DDS). Even without heuristic initialization, TCS+Uniform still achieves competivitve performance compared to the baselines. Notably, for slk, the best performing method is discovered by DDS without heuristic initialization.
+Next, we can compare the results for NMT where we have specifically designed heuristics that either require linguistic knowledge (Related) or knowledge of the structural characteristics of the task (TCS).
+We can see that vanilla DDS performs favorably with respect to these state-of-the-art data selection baselines, outperforming each in 3 out of the 4 settings (with exceptions of slightly underperforming Related on \texttt{glg} and TCS on \texttt{aze}).
+In addition, we see that combining DDS with our existing heuristic knowledge in TCS+DDS further improves the results, leading to improvements over DDS alone in three out of four cases (with the exception of \texttt{slk}, where vanilla DDS already outperformed TCS.
