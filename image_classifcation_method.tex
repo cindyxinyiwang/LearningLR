@@ -1,7 +1,8 @@
 \subsection{\label{sec:image_method}Formulation for Classification}
 
-\begin{wraptable}{l}{8cm}
-\resizebox{!}{3.5cm}{
+%\begin{wraptable}{l}{8cm}
+\begin{center}
+\resizebox{!}{3cm}{
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -35,7 +36,9 @@
   \caption{\label{alg:image_classification_dds}Training a classification model with DDS.}
 \end{algorithm}
 }
-\end{wraptable}
+\end{center}
+
+%\end{wraptable}
 Algorithm~\ref{alg:image_classification_dds} presents the pseudo code for the training process on classification tasks, using the notations introduced in Section~\ref{sec:method}. 
 The main  classification model is parameterized by $\theta$. The \dds~model $p(X, Y; \psi)$ is an identical network with the main model, but with independent weights, \ie~$p(X, Y; \psi)$ does not share weights with $\theta$. For each example $x_i$ in a minibatch uniformly sampled from $\mathcal{D}_\text{train}$, this \dds~model outputs a scalar from the data $x_i$. All scalars are passed through a softmax function to computes the relative probabilities of the examples in the minibatch, and their gradients are scaled accordingly when applied to $\theta$. Note that our actual formulation of $p(X, Y; \psi)$ does \textit{not} depend on $Y$, but we keep $Y$ in the notation for consistency with the formulation of the \dds~framework. Note that we have two gradient update steps, one for the model parameter $\theta_t$ in line~\ref{alg:grad_update_model} and the other for the distribution parameter $\psi$ in line~\ref{alg:grad_update_p}. For the model parameter update, we can simply use any of the standard optimization update rule. For the distribution parameter $\psi$, we use the update rule derived in Section \ref{sec:grad_of_optimizers}.
 

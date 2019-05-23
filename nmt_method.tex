@@ -11,8 +11,9 @@ Suppose we have a multilingual corpus $\mathcal{D}_{\text{train}}$ of $n$ source
 %    \theta^* = \arg\min_\theta \mathbb{E}_{x_i,y_i \sim p(X, Y;\psi)}\left[ \ell_{\text{train}}(x_i, y_i; \theta) \right]
 %  \end{aligned}
 %\end{equation}
-\begin{wraptable}{l}{8cm}
-\resizebox{!}{4cm}{
+%\begin{wraptable}{l}{8cm}
+\begin{center}
+\resizebox{!}{3cm}{
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -23,7 +24,7 @@ Suppose we have a multilingual corpus $\mathcal{D}_{\text{train}}$ of $n$ source
 %\KwResult{Write here the result }
 
 \Input{$\mathcal{D}_{\text{train}}$; K: number of data to train the NMT model before updating $\psi$; 
-%E: number of updates for $\psi$; 
+E: number of updates for $\psi$; 
 $\alpha_1$,$\alpha_2$: discount factors for the gradient}
 
 \Output{The converged NMT model $\theta^*$}
@@ -50,19 +51,20 @@ $\alpha_1$,$\alpha_2$: discount factors for the gradient}
     }
   
     \Comment{Optimize $\psi$}
-    %\For{ iter in E}{
+    \For{ iter in E}{
       
       sample $B$ data pairs from $\mathcal{D}_{\text{train}}$
       
       $d_\psi \leftarrow \frac{1}{B} \sum_{j=1}^B \sum_{i=1}^n \left[ \text{grad}[S_i]^\top \text{grad}[S] \cdot \nabla_{\psi_{t-1}} \text{log}\left( p\left( S_i|y_j;\psi_{t-1} \right) \right) \right]$
        
       $\psi_t \leftarrow \text{GradientUpdate}(\psi_{t-1}, d_{\psi_{t-1}})$ 
-    %}
+    }
   }
   \caption{\label{alg:nmt_dds}Training multilingual NMT with DDS.}
 \end{algorithm}
 }
-\end{wraptable} 
+\end{center}
+%\end{wraptable} 
 
 To make training more efficient and stable for multilingual NMT, we make several modifications of the main framework in section \ref{sec:diff_data_selection}: 1) we normalize $p(\psi)$ as a distribution over the source languages, given a target sentence and its corresponding multilingual source sentences; this design follows the formulation of Target Conditioned Sampling~(TCS), the existing state-of-the-art data selection method that samples a source language for each target sentence based on the vocabulary overlap between the source langauges $S_i$ and $S$, the language we want to model~\citep{TCS}; 2) we only update $\psi$ after updating the NMT model for a fixed number of steps; 3) for multilingual NMT, the dev set $\mathcal{D}_{\text{dev}}$ is a set of parallel data from $S$-$T$. Therefore, we can replace $\ell(\mathcal{D}_{\text{dev}})$ in Equation \ref{eqn:two_step_update} with loss of the training data from $S$-$T$; 4) we sample the data according to $p(\psi)$ to get a Monte Carlo estimate of the objective in Equation \ref{eqn:psi_theta_argmin}. This can significantly reduce the training time compared to using all data. The pseudo code of the training process is in Algorithm \ref{alg:nmt_dds}.
 

@@ -12,6 +12,7 @@ Commonly in machine learning, we seek to find parameters $\theta$ that minimize 
 where $\langle x, y \rangle$ are pairs of inputs and associated labels sampled from a particular distribution $P(X, Y)$:
 \begin{equation}
   \label{eqn:generic_optim}
+   \small
   \begin{aligned}
     \theta^* = \argmin_\theta J(\theta, P)
     ~~~\text{where}~~~
@@ -36,6 +37,7 @@ and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, p(X, Y;\p
 %\gn{A little pedantic, but $\psi$ isn't included anywhere in Eqn~\ref{eqn:generic_optim}. I think one easy way to fix this is instead of having $P(X,Y)$ be the true data distribution (unknown), you could have it be ``an arbitrary distribution''. Then you could say that ``ideally, this would match the true data distribution, but unfortunately this is not known''} 
 \begin{equation}
   \label{eqn:psi_theta_argmin}
+   \small
   \begin{aligned}
     \psi^* = \argmin_\psi
     \sum_{i=1}^{N_\text{dev}} \ell(x_i, y_i; \theta^*(\psi))
@@ -52,6 +54,7 @@ For the rest of the section, we simply write the training objective $J(\theta, p
 For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochastic gradient update. Specifically, at time step $t$, we update
 \begin{equation}
   \label{eqn:theta_update_rule}
+   \small
   \begin{aligned}
     \theta_t \leftarrow \theta_{t-1} - g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big)
   \end{aligned}
@@ -68,6 +71,7 @@ By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal
 %\gn{The first line here was actually pretty hard to follow for me. I think $\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top$ should probably be $\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top$, and $\nabla_\psi \theta_t(\psi)$ should be $\nabla_\psi \theta_t$ maybe? If so, please correct. Also maybe $J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$?}
 \begin{equation}
   \label{eqn:two_step_update}
+   \small
   \begin{aligned}
     \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) &\text{(chain rule)} \\
@@ -78,6 +82,7 @@ By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal
 Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent:
 \begin{equation}
   \label{eqn:psi_update_rule}
+   \small
   \begin{aligned}
     \psi_{t+1} 
       &\leftarrow \psi_t + \eta_\psi \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi_t) \big),
@@ -105,6 +110,7 @@ Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent
 \paragraph{SGD Updates.} The SGD update rule for $\theta$ is as follows
 \begin{equation}
   \label{eqn:sgd_update}
+   \small
   \begin{aligned}
     \theta_t &\leftarrow \theta_{t-1} - \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
   \end{aligned}
@@ -112,6 +118,7 @@ Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent
 where $\eta_t$ is the learning rate. Matching the updates in Eqn~\ref{eqn:sgd_update} with the generic framework in Eqn~\ref{eqn:theta_update_rule}, we can see that $g$ in Eqn~\ref{eqn:theta_update_rule} has the form: %\gn{$J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$? There seem to be a few of these inconsistencies below as well, so please check. Also, which time step of $\theta$ does the gradient depend on?}
 \begin{equation}
   \label{eqn:momentum_update_g}
+   \small
   \begin{aligned}
     g\big(\nabla_\theta J(\theta_{t-1}, \psi)\big) = \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
   \end{aligned}
@@ -119,6 +126,7 @@ where $\eta_t$ is the learning rate. Matching the updates in Eqn~\ref{eqn:sgd_up
 This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$, allowing the exact differentiation of $g$ with respect to $\psi$. From Eqn~\ref{eqn:psi_update_rule}, we have
 \begin{equation}
   \label{eqn:momentum_update_for_psi}
+   \small
   \begin{aligned}
     &\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big) \\
     &= \eta_t \cdot \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
@@ -134,6 +142,7 @@ Here, the last equation follows from the log-derivative trick in the REINFORCE a
 \paragraph{Momentum Updates.} The momentum update rule for $\theta$ is as follows
 \begin{equation}
   \label{eqn:momentum_update}
+   \small
   \begin{aligned}
     m_t &\leftarrow \mu_t m_{t-1} + \eta_t \nabla_\theta J(\theta_{t-1}, \psi) \\
     \theta_t &\leftarrow \theta_{t-1} - m_t,
@@ -142,6 +151,7 @@ Here, the last equation follows from the log-derivative trick in the REINFORCE a
 where $\mu_t$ is the momentum coefficient and $\eta_t$ is the learning rate. This means that $g$ has the form:
 \begin{equation}
   \label{eqn:momentum_update_g}
+   \small
   \begin{aligned}
     g(x) &= \mu m_{t-1} + \eta_t x \\
     g'(x) &= \eta_t
@@ -162,6 +172,7 @@ Therefore, the computation of the gradient $\nabla_{\psi}$ for the Momentum upda
 \paragraph{Adam Updates.} We use a slightly modified update rule based on Adam~\citep{adam}:
 \begin{equation}
   \label{eqn:adam_update}
+   \small
   \begin{aligned}
     &g_t \leftarrow \nabla_\theta J(\theta_{t-1}, \psi) \\
     &v_t \leftarrow \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
@@ -172,6 +183,7 @@ Therefore, the computation of the gradient $\nabla_{\psi}$ for the Momentum upda
 where $\beta_2$ and $\eta_t$ are hyper-parameters. This means that $g$ is a component-wise operation of the form:
 \begin{equation}
   \label{eqn:adam_update_g}
+   \small
   \begin{aligned}
     g(x) &= \frac{\eta_t \sqrt{1 - \beta_2^t} \cdot x}{\sqrt{\beta_2 v_{t-1} + (1 - \beta_2) x^2 + \epsilon}} \\
     g'(x) &= \frac{\eta_t \sqrt{1 - \beta_2^t} (\beta_2 v_{t-1} + \epsilon)}{\big( \beta_2 v_{t-1} + (1 - \beta_2) x^2 + \epsilon \big)^{3/2}} \approx \eta_t \sqrt{\frac{1 - \beta_2^t}{\beta_2 v_{t-1}}},  
@@ -179,5 +191,4 @@ where $\beta_2$ and $\eta_t$ are hyper-parameters. This means that $g$ is a comp
 \end{equation}
 %\paul{So all of this is under the assumption that $v_{t-1}$ is independent on $\psi$ right? maybe bring it up?}
 the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. Here the approximation makes sense because we empirically observe that the individual values of the gradient vector $\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie~$g_t$, are close to $0$. Furthermore, for Adam, we usually use $\beta_2 = 0.999$. Thus, the value $(1 - \beta_2) x^2$ in the denominator of Eqn~\ref{eqn:adam_update_g} is negligible. With this approximation, the computation of the gradient $\nabla_\psi$ is almost the same with that for SGD in Eqn~\ref{eqn:momentum_update_for_psi}, with one extra component-wise scaling by the term in Eqn~\ref{eqn:adam_update_g}.
-
 \gn{I have checked carefully up to here.}
