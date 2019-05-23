@@ -1,6 +1,6 @@
 \subsection{\label{sec:nmt_method}Formulation for Multilingual NMT}
 
-Suppose we have a multilingual corpus $\mathcal{D}_{\text{train}}$ of $n$ source languages $(S_1, S_2, ..., S_n)$ to the target language $T$. Our goal is to find the optimal data for training an NMT model of the language $S$ to $T$. We want to train a parameterized distribution $p(x, y;\psi)$ with a support over $\mathcal{D}_{\text{train}}$, such that selecting training data according to this distribution leads to the optimal NMT model $\theta^*$ on the language $S$. 
+Multilingual training is shown to be very effective at improve the translation quality of low-resource langauges~\citep{nmt_transfer,rapid_adapt_nmt,johnson_nmt}. In practice, we have a multilingual corpus $\mathcal{D}_{\text{train}}$ of $n$ source languages $(S_1, S_2, ..., S_n)$ to the target language $T$. \cite{rapid_adapt_nmt} shows that training a single NMT model on the concatenation of both the low-resource language and its most related high-resource langauge identified with linguistic knowledge is generally efficient and very competitive. However, intead of relying on linguistic knowledge, here we want to automatically select the optimal data from $\mathcal{D}_{\text{train}}$ for training an NMT model of the language $S$ to $T$. We want to train a parameterized distribution $p(x, y;\psi)$ with a support over $\mathcal{D}_{\text{train}}$, such that selecting training data according to this distribution leads to the optimal NMT model $\theta^*$ on the language $S$. 
 %That is, $\psi$ satisfies the following condition
 %\begin{equation}
 %  \label{eqn:nmt_argmin}
@@ -12,6 +12,7 @@ Suppose we have a multilingual corpus $\mathcal{D}_{\text{train}}$ of $n$ source
 %  \end{aligned}
 %\end{equation}
 %\begin{wraptable}{l}{8cm}
+    %\vspace{-0.3cm}
 \begin{center}
 \resizebox{!}{3.5cm}{
 \begin{algorithm}[H]
@@ -64,6 +65,7 @@ $\alpha_1$,$\alpha_2$: discount factors for the gradient}
 \end{algorithm}
 }
 \end{center}
+    \vspace{-0.2cm}
 %\end{wraptable} 
 
 To make training more efficient and stable for multilingual NMT, we make several modifications of the main framework in section \ref{sec:diff_data_selection}: 1) we normalize $p(\psi)$ as a distribution over the source languages, given a target sentence and its corresponding multilingual source sentences; this design follows the formulation of Target Conditioned Sampling~(TCS), the existing state-of-the-art data selection method that samples a source language for each target sentence based on the vocabulary overlap between the source langauges $S_i$ and $S$, the language we want to model~\citep{TCS}; 2) we only update $\psi$ after updating the NMT model for a fixed number of steps; 3) for multilingual NMT, the dev set $\mathcal{D}_{\text{dev}}$ is a set of parallel data from $S$-$T$. Therefore, we can replace $\ell(\mathcal{D}_{\text{dev}})$ in Equation \ref{eqn:two_step_update} with loss of the training data from $S$-$T$; 4) we sample the data according to $p(\psi)$ to get a Monte Carlo estimate of the objective in Equation \ref{eqn:psi_theta_argmin}. This can significantly reduce the training time compared to using all data. The pseudo code of the training process is in Algorithm \ref{alg:nmt_dds}.

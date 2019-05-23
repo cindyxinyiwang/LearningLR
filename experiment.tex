@@ -1,6 +1,6 @@
 \section{\label{sec:experiment}Experiments}
 %\gn{You need at least one sentence of lead-in here.}
-In this section, we first discuss the experimental results of DDS on image classification, an instance of the general classification problem using Algorithm \ref{alg:image_classification_dds}. Then we demonstrate the effectiveness of DDS on a special case of multilingual NMT using Algorithm \ref{alg:nmt_dds}.
+In this section, we discuss the experimental results of DDS on both image classification, an instance of the general classification problem using Algorithm \ref{alg:image_classification_dds}, as well as a special case of multilingual NMT using Algorithm \ref{alg:nmt_dds}.
 
 \subsection{\label{exp:settings}Experimental Settings}
 
@@ -19,9 +19,9 @@ The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 
 Our experiments were conducted on second-generation Tensor Processing Units (TPUv2). There were several important implementation details related to improving training efficiency with DDS for ImageNet models (these were not needed for the smaller CIFAR-10 training set). First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the DDS model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the DDS model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example.
 
 \paragraph{Multilingual NMT Models and Training Details.}
-For multi-lingual NMT, we use a standard LSTM-based attentional baseline \cite{bahdanau}, similar to those previously used on this dataset \cite{rapid_adapt_nmt}.
+For multi-lingual NMT, we use a standard LSTM-based attentional baseline \cite{attention}, similar to those previously used on this dataset \cite{rapid_adapt_nmt}.
 We optimize both the NMT and DDS models with Adam, using learning rates of 0.001 and 0.0001 for $\theta$ and $\psi$ respectively.
-Accuracy is measured using BLEU score \cite{papineni}.
+Accuracy is measured using BLEU score \cite{bleu}.
 More details are noted in Appendix \ref{app:nmt_hparam}.
 
 \paragraph{Data Selection Methods.}
