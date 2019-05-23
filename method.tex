@@ -92,7 +92,6 @@ where $\eta_\psi$ is the learning rate for $\psi$, which is a hyper-parameter. N
 %\gn{haha, a little more detail might be warranted here :) ``prior work on XXX (cite), YYY (cite), and ZZZ (cite)}. 
 However, we are the first to utilize the idea for data selection to reduce discrepancy between the training and dev sets. 
 
-\gn{Everyone, particularly Paul, what do you think?}
 One reasonable concern may be raised with this approach, in that we optimize $\psi_t$ directly on the dev set using $J(\theta_t, \mathcal{D}_\text{dev})$, which may risk indirectly overfitting model parameters $\theta_t$ by selecting a small subset of data that is overly specialized.
 However we do not observe this problem in practice, and posit that this because (1) the influence of $\psi_t$ on the final model parameters $\theta_t$ is quite indirect, and acts as a ``bottleneck'' which has similarly proven useful for preventing overfitting in neural models \cite{grezl2007probabilistic}, and (2) because the actual implementations of DDS~(which we further discuss in Section \ref{sec:formualtion}) only sample a subset of data from $\mathcal{D}_\text{dev}$ at each optimization step, further limiting expressivity.
 %\gn{Let me revive Paul's comment here: I think this is an important discussion (I believe I also brought this up when speaking with Cindy, independently of Paul, so this is definitely something people paying attention will notice). Let's try to add this somewhere, perhaps at the end of this section.}
