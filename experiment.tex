@@ -12,9 +12,10 @@ In this section, we first discuss the experimental results of DDS on image class
 
 Our experiments are conducted on the second generation of Tensor Processing Units (TPUv2). We discuss three important implementation details to improve the training efficiency of ImageNet models. First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (\cf~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the distribution model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the distribution model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, to soften the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ to collapse into always choosing a particular example. We note that all these three tricks are not needed for our experiments on CIFAR-10, where the batch size is much smaller.
 
-%\begin{wraptable}{l}{0.7\textwidth}
-\begin{center}
+\begin{wraptable}{r}{0.6\textwidth}
 %\begin{adjustbox}{max width=0.7\textwidth}
+\vspace{-1cm}
+\resizebox{0.6\textwidth}{!}{
   \begin{tabular}{llll}
     \multicolumn{4}{c}{\textbf{CIFAR-10} ($\text{mean} \pm \text{std}$ over $10$ runs)} \\
   \toprule
@@ -54,11 +55,12 @@ Our experiments are conducted on the second generation of Tensor Processing Unit
     \\
     \bottomrule
   \end{tabular}
+}
   \captionof{table}{\label{tab:image_classification_results}Image classification accuracy. Higher is better.}
 %\end{adjustbox}
-\end{center}
-%\end{wraptable}
-\vspace{-0.5cm}
+%\end{center}
+\end{wraptable}
+
 \paragraph{Results.} Results are presented in Table~\ref{tab:image_classification_results}. As can be seen, \dds~improves the performance of all tasks considered. In our intuitions, \dds~provides an extra degree of freedom to train the models, namely the per-example scaling of gradients. This extra degree of freedom is well-utilized by the $p(\hat{x}, \hat{y}; \psi)$ distribution, leading to the improvements.
 
 
