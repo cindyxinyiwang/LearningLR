@@ -9,8 +9,8 @@ We focuse particularly on multilingual NMT, because in this case the choice of d
   \captionof{figure}{\label{fig:nmt_converge}Development set perplexity vs. training steps. \textit{From left to right}: \texttt{aze}, \texttt{bel}, \texttt{glg}, \texttt{slk}.}
 \end{center}
 \paragraph{Training Curves.} First, we plot the dev set perplexity over the course of training in Figure \ref{fig:nmt_converge}.
-DDS, with or without initialization with the heuristic distribution from TCS, allows the model to reach lower dev perplexity than TCS for all 4 languages.
-\gn{Would like to add more here. How does ``Uniform'' compare? Explain that convergence is faster with initialization with TCS.}
+DDS, with or without initialization with the heuristic distribution from TCS, allows the model to reach lower dev perplexity than TCS for all 4 languages. We didn't plot Uniform here because it takes much longer training steps to converge, and thus has very noisy trend.
+%\gn{Would like to add more here. How does ``Uniform'' compare? Explain that convergence is faster with initialization with TCS.}
 
 \begin{center}
   \includegraphics[width=0.22\columnwidth]{figs/aze_hs_probs_plot.eps}
@@ -27,6 +27,7 @@ DDS, with or without initialization with the heuristic distribution from TCS, al
   \includegraphics[width=0.29\columnwidth]{figs/slk_uni_probs_plot.eps}
   \captionof{figure}{\label{fig:nmt_distrib_uni}Language usage for DDS by training step. \textit{From left to right}: \texttt{aze}, \texttt{bel}, \texttt{glg}, \texttt{slk}.}
 \end{center}
+\vspace{-0.5cm}
 \paragraph{Learned Language Distributions.}
 To analyze the learned language distribution, we plot the probability distribution of the four HRLs (because they have more data and thus larger impact on training) over the course of training.  Figure \ref{fig:nmt_distrib_hs} shows the change of language distribution for TCS+DDS. Since TCS selects the language with the largest vocabulary overlap with the LRL, the distribution is initialized to focus on the most related HRL. For all four LRLs, the percentage of their most related HRL start to decrease as training continues. For \texttt{aze}, DDS quickly comes back to using the its most related HRL. However, for \texttt{bel}, DDS continues the trend of using all four languages. This shows that DDS is able to maximize the benefits of the multilingual data by having a more balanced usage of all languages. 
 %For gig and slk, DDS learns to mainly use both por and ces, their corresponding HRL.
