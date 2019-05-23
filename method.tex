@@ -190,4 +190,3 @@ where $\beta_2$ and $\eta_t$ are hyper-parameters. This means that $g$ is a comp
 \end{equation}
 %\paul{So all of this is under the assumption that $v_{t-1}$ is independent on $\psi$ right? maybe bring it up?}
 the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. Here the approximation makes sense because we empirically observe that the individual values of the gradient vector $\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie~$g_t$, are close to $0$. Furthermore, for Adam, we usually use $\beta_2 = 0.999$. Thus, the value $(1 - \beta_2) x^2$ in the denominator of Eqn~\ref{eqn:adam_update_g} is negligible. With this approximation, the computation of the gradient $\nabla_\psi$ is almost the same with that for SGD in Eqn~\ref{eqn:momentum_update_for_psi}, with one extra component-wise scaling by the term in Eqn~\ref{eqn:adam_update_g}.
-\gn{I have checked carefully up to here.}
