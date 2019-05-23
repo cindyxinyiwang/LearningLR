@@ -1,0 +1,9 @@
+\section{\label{sec:formualtion}Concrete Instantiations of DDS}
+
+%\gn{I made a few changes here, please tell me if you think they aren't warranted: (1) I moved this sentence into this section from the end of the previous section, (2) I removed the mention of ``Momentum'' and ``Adam'' in the below sentence, as it seemed to hurt generality, (3) I tried to note that image classification is ``generic'' and multilingual NMT is ``specific'', so as a general ML paper people can see that this is both broadly applicable and customizable.}
+After discussing our generic framework and derivations for specific optimizers, we now turn to discuss two concrete instantiations of DDS that we use in our experiments: a more generic example of classification, which should be applicable to a wide variety of tasks, and a specialized application to the task of multilingual NMT, which should serve as an example of how DDS can be adapted to the needs of specific applications.
+
+%\gn{In the following, for further generality, (1) can we turn ``Image Classification'' into just ``Classification''? (2) can we remove any other details that hurt the generality of the approach such as specific mention of ``Momentum'' or ``Adam'', mentioning that the classification model is a CNN, etc.? These can be moved to the experiments.}
+
+\input{image_classifcation_method.tex}
+\input{nmt_method.tex}

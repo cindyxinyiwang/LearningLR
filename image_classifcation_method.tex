@@ -1,0 +1,55 @@
+\subsection{\label{sec:image_method}Formulation for Classification}
+
+\begin{wraptable}{l}{8cm}
+\resizebox{!}{3.5cm}{
+\begin{algorithm}[H]
+\SetAlgoLined
+\DontPrintSemicolon
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetCommentSty{itshape}
+\SetKwComment{Comment}{$\triangleright$\ }{}
+\Input{$\mathcal{D}_\text{train}$, $\mathcal{D}_\text{dev}$}
+\Output{Optimal parameters $\theta^*$}
+ Initializer $\theta_0$ and $\psi_0$
+ 
+ \For{$t = 1$~\textbf{\emph{to}}~$\text{num\_train\_steps}$}{
+    Sample $B$ training data points $x_i, y_i \sim \text{Uniform}(\mathcal{D}_\text{train})$
+    
+    Sample $B$ validation data points $x'_i, y'_i \sim \text{Uniform}(\mathcal{D}_\text{dev})$
+  
+    \Comment{Train $\theta$ for one step}
+    Update $\theta_t \leftarrow \text{GradientUpdate}\Big(\theta_{t-1}, \sum_{i=1}^{B} p(x_i, y_i; \psi_{t-1}) \nabla_\theta \ell(x_i, y_i; \theta_{t-1}) \Big)$
+    \label{alg:grad_update_model}
+    
+    \Comment{Evaluate $\theta_t$ on $\mathcal{D}_\text{dev}$}
+    Let $d_\theta \leftarrow \frac{1}{B} \sum_{j=1}^{B} \nabla_\theta \ell(x'_j, y'_j; \theta_t)$
+  
+    \Comment{Compute gradient of $\psi$}
+    Let $d_\psi \leftarrow \frac{1}{B} \sum_{i=1}^{B} \left[ \Big( d_\theta^\top \cdot \nabla_\theta \ell(x_i, y_i; \theta_{t-1}) \Big) \cdot \nabla_\psi \log{p(x_i, y_i; \psi)} \right]$
+    \label{alg:require_per_example_grad}
+    
+    Update $\psi_t \leftarrow \text{GradientUpdate}(\psi_{t-1}, d_\psi)$
+    \label{alg:grad_update_p}
+  }
+  \caption{\label{alg:image_classification_dds}Training a classification model with DDS.}
+\end{algorithm}
+}
+\end{wraptable}
+Algorithm~\ref{alg:image_classification_dds} presents the pseudo code for the training process on classification tasks, using the notations introduced in Section~\ref{sec:method}. 
+The main  classification model is parameterized by $\theta$. The \dds~model $p(X, Y; \psi)$ is an identical network with the main model, but with independent weights, \ie~$p(X, Y; \psi)$ does not share weights with $\theta$. For each example $x_i$ in a minibatch uniformly sampled from $\mathcal{D}_\text{train}$, this \dds~model outputs a scalar from the data $x_i$. All scalars are passed through a softmax function to computes the relative probabilities of the examples in the minibatch, and their gradients are scaled accordingly when applied to $\theta$. Note that our actual formulation of $p(X, Y; \psi)$ does \textit{not} depend on $Y$, but we keep $Y$ in the notation for consistency with the formulation of the \dds~framework. Note that we have two gradient update steps, one for the model parameter $\theta_t$ in line~\ref{alg:grad_update_model} and the other for the distribution parameter $\psi$ in line~\ref{alg:grad_update_p}. For the model parameter update, we can simply use any of the standard optimization update rule. For the distribution parameter $\psi$, we use the update rule derived in Section \ref{sec:grad_of_optimizers}.
+
+\paragraph{Per-Example Gradient.} As can be seen from Line~\ref{alg:require_per_example_grad} of Algorithm~\ref{alg:image_classification_dds}, as well as from Eqn~\ref{eqn:momentum_update_for_psi}, \dds's implementation requires us to compute $\nabla_\theta \ell(x_i, y_i; \theta_{t-1})$, \ie~the gradient for each example in a batch of training data. This operation is very slow and memory intensive, especially when the batch size is large, \eg~our experiments on ImageNet use a batch size of $4096$ (\cf~Section~\ref{exp:image_classification}). Therefore, we propose an efficient approximation of this per-example gradient computation via the first-order Taylor expansion of $\ell(x_i, y_i; \theta_{t-1})$. In particular, for any vector $v \in \mathbb{R}^{\ABS{\theta}}$, with sufficiently small $\epsilon > 0$, we have:
+\begin{equation}
+  \label{eqn:taylor_dot_product}
+  \begin{aligned}
+    v^\top \cdot \nabla_\theta \ell(x_i, y_i; \theta_{t-1})
+    \approx
+    \frac{1}{\epsilon}
+    \left(
+      \ell\big( x_i, y_i; \theta_{t-1} + \epsilon v \big) -
+      \ell\big( x_i, y_i; \theta_{t-1} \big)
+    \right),
+  \end{aligned}
+\end{equation}
+Eqn~\ref{eqn:taylor_dot_product} can be implemented by keeping a shadow version of the parameters $\theta_{t-1}$, caching the training loss $\ell(x_i, y_i; \theta_{t-1})$, and computing the new loss with $\theta_{t-1} + \epsilon v$. Here, $v$ is $d_\theta$ as in Line~\ref{alg:require_per_example_grad} of Algorithm~\ref{alg:image_classification_dds}.

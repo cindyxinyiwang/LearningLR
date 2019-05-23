@@ -1,0 +1,60 @@
+\section{\label{sec:alg}Algorithm}
+
+\begin{algorithm}[H]
+\SetAlgoLined
+\DontPrintSemicolon
+\SetKwInOut{Input}{Input}
+\SetKwInOut{Output}{Output}
+\SetCommentSty{itshape}
+\SetKwComment{Comment}{$\triangleright$\ }{}
+%\KwResult{Write here the result }
+\Input{Multilingual Corpus C, with $n$ source languages $(S_1, S_2,...,S_n)$}
+\Output{The converged NMT model $\theta^*$}
+ Initialize the agent $g(i|x, y; \omega)$, and the NMT model $\theta$
+ 
+ \While{$\theta$ not converged}{
+  X, Y = load\_data(g(x, y; \omega), C)
+  
+  optimize\_NMT(\theta, X, Y)
+  
+  grad\_vec = calculate\_grad\_prod($S$, $S_1, S_2, ..., S_n$)
+  
+  \For{ iter in E}{
+  
+    sample $B$ data pairs from $C$
+  
+    optimize $g$ by minimizing the loss 
+  $-\frac{1}{B} \sum_{j=1}^B \sum_{i=1}^n \text{grad\_vec}[i] \cdot \text{log}(g(i|x_j, y_j;\omega))$ 
+  }
+  
+  
+ }
+ \caption{Training multilingual NMT data selection agent}
+\end{algorithm}
+
+%\begin{algorithm}[h]
+%  \caption{The first method of making balanced binary tree}
+%  \small
+%  \DontPrintSemicolon
+%  \SetKwInOut{Input}{Input}
+%  \SetCommentSty{itshape}
+%  \SetKwComment{Comment}{$\triangleright$\ }{}
+%  % \SetAlgoNoEnd
+%  % \SetAlgoNoLine
+%  \SetKwInOut{Output}{Output}
+%  \SetKwFunction{FMakeTree}{make\_tree\_v1}
+%  \SetKwProg{Fn}{Function}{:}{}
+%  \Input{$w$: the list of words in a sentence, $l$: start index, $r$: end index}
+%  \Output{a balanced binary tree for words from $l$ to $r$ in $w$}
+%  \Fn{\FMakeTree{$w$, $l$, $r$}}{
+%  %  \If {$l = r$} { 
+%  %    \KwRet $\textrm{TerminalNode}(w[l])$\;
+%  %  }
+%  %  \;
+%  %  $m = \text{floor}((l + r) / 2)$ \Comment*[r]{index of split point} 
+%  %  $\textit{left\_tree} = \textrm{make\_tree\_v1}(w, l, m)$ \;
+%  %  $\textit{right\_tree}= \textrm{make\_tree\_v1}(w, m+1, r)$ \;
+%  %  \;
+%  %  \KwRet $\textrm{NonTerminalNode}(\textit{left\_tree}, \textit{right\_tree})$
+%  }
+%\end{algorithm}

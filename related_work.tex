@@ -1,0 +1,23 @@
+\section{\label{sec:related_work}Related Works}
+%\gn{These are mostly based on stuff for NMT, a broader survey is necessary to increase more general ML methods. I've also only added a small subset of the papers on MT. Please follow the backward and forward references (forward references can be found by clicking the ``cited by'' link in Google Scholar).}
+
+Selecting good training data is an important research topic in both Natural Language Processing and Computer Vision. For NMT, several prior work has focused on data selection for domain adaptation~\citep{moore2010intelligent,axelrod2011domain}, generally using heuristics to measure domain similarity and select the data above a predefined similarity threshold. Others have proposed to use all the data but weigh each instance according to heuristically defined domain similarity score~\citep{jiang-zhai-2007-instance,foster-etal-2010-discriminative,wang-etal-2017-instance}. Besides domain adaptation, it is also found that selecting good examples from the training data can improve NMT~\citep{vyas-etal-2018-identifying,pham-etal-2018-fixing}. All of the above methods involve certain heuristic designs using domain knowledge, while DDS can directly optimize the data selection strategy without heuristic estimation. Recently, \cite{domain_adapt_transfer} propose to estimate the importance weight of the classification labels in the pretraining dataset to mitigate the domain differences between pretraining and fine-tuning, while DDS is a more general data selection framework that works for both classification and other usage cases.  
+
+The formulation of DDS involves bilevel optimization~\citep{bilevel_optim,hier_optim}, which is utilized in several prior work in areas other than data selection~\citep{darts,hyper_grad,finn2017model}. More generally, our method is also related to curriculum learning. Human designed training curriculum is found to be very effective for NMT~\citep{zhang2016boosting,zhang2018empirical,platanios19naacl}. \cite{baysian_curriculum} proposed to use Bayesian Optimization to learn the optimal curriculum. However, it simply learns the optimal combination of predefined heuristic features, while our method does not need any domain-specific knowledge and thus can be generalized to any deep learning models.    
+
+Lastly, our method is related to the work on investigating the effect of label noise on deep image recognition models \cite{rolnick2017deep,overfit_random_examples} or machine translation \cite{khayrallah-koehn-2018-impact}, while \citet{koh2017understanding} shows the feasibility of training set poisoning attacks.
+
+
+%Instance weighting: \cite{jiang-zhai-2007-instance,foster-etal-2010-discriminative,wang-etal-2017-instance}. In particular, \cite{wang-etal-2017-instance} seems like a good paper to compare against because it's recent and based on neural MT.
+
+%Curriculum learning: \cite{zhang2016boosting,zhang2018empirical,platanios19naacl}.
+
+%Data selection: \cite{moore2010intelligent,axelrod2011domain}.
+
+%Removing bad training examples improves MT: \cite{vyas-etal-2018-identifying,pham-etal-2018-fixing}
+
+%Dataset poisoning (for neural models): \cite{koh2017understanding}
+
+
+
+%Meta-learning. Formulation of using the gradient update equation is similar to MAML \cite{finn2017model}.

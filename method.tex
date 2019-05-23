@@ -1,0 +1,183 @@
+\section{\label{sec:method}Differentiable Data Selection}
+\subsection{\label{sec:dds_motivation}Motivation}
+
+% \gn{I made a number of suggestions below based on the fact that it's not just $\ell_{\text{train}}$ and $\ell_{\text{dev}}$ that changed, but also $\mathcal{D}_{\text{train}}$ and $\mathcal{D}_{\text{dev}}$. An alternative would be to define $J_{\text{train}}(\theta)$ and  $J_{\text{dev}}(\theta)$, which are based on the training data and development data, then discuss the fact that you're trying to close the gap between the two.}
+% \gn{I also think it might not be immediately obvious to many people why $\ell_{\text{train}}$ and $\ell_{\text{dev}}$ may be different? From the description here (n.b., I haven't read beyond Section 2.1 while writing this comment, which I think is fine because people read papers linearly), I would guess you mean something like $\ell_{\text{train}}$ is an efficient-to-compute maximum likelihood objective and $\ell_{\text{dev}}$ is a slow-to-compute RL or minimum risk objective?}
+% \gn{I think describing Section 2.1 super-clearly is important here. This is an exciting idea, and I think if we explain it well people will be excited about it! Let's polish this section a lot.}
+% \gn{One idea: what about making $J(\theta)$ itself be parameterized by a loss function and a data distribution? Then we can plug in any loss and data that we prefer later without re-defining equations?}
+% \an{Another idea (that I am ambivalent about): After section 2.2, you drop $(x,y)$ from the notation. I associate (x,y) with single input/output, which is not necessarily the case. Maaaaybe substitute all $(x,y)$ with $d$ e.g. $\ell_{\text{dev}}(d;\theta)$ and $d \sim \text{Uniform}(\mathcal{D}_{\text{train}})$?}
+
+Commonly in machine learning, we seek to find parameters $\theta$ that minimize the \emph{risk} $J(\theta,P)$, the expected value of a loss function $\ell(x, y; \theta)$,
+%\paul{AKA empirical risk if you want to pander to ML savvy reviewers} \gn{actually, not ``empirical risk'', just ``risk'', unless we're defining it over a particular set of data. But good point though. I've modified the explanation.}
+where $\langle x, y \rangle$ are pairs of inputs and associated labels sampled from a particular distribution $P(X, Y)$:
+\begin{equation}
+  \label{eqn:generic_optim}
+  \begin{aligned}
+    \theta^* = \argmin_\theta J(\theta, P)
+    ~~~\text{where}~~~
+    J(\theta, P) = \mathbb{E}_{x, y \sim P(X, Y)} [\ell(x, y; \theta)]
+  \end{aligned}
+\end{equation}
+
+In the ideal case, we would like the risk $J(\cdot)$ to be minimized over the inputs and outputs that we will expect our system to see at test time, defined as $P_{\text{test}}(X,Y)$.
+Unfortunately, this distribution is unknown at training time, so instead we collect a training set $\mathcal{D}_\text{train} = \{(x_i, y_i): i = 1, ..., N_\text{train}\}$ with distribution $P_\text{train}(X, Y)$, and minimize the \emph{empirical risk} by taking $\langle x, y \rangle \sim \text{Uniform}(\mathcal{D}_\text{train})$.
+Since we need a large enough $\mathcal{D}_\text{train}$ to train a good model, it is hard to ensure that $P_\text{train}(X, Y) \approx P_{\text{test}}(X, Y)$, and in fact one frequently has to be content with training data from a very different distribution than what we see at test time.
+However, it is generally possible to collect a relatively small development set $\mathcal{D}_\text{dev}= \{(x_i, y_i): i = 1, ..., N_\text{dev}\}$ with distribution $P_{\text{dev}}(X, Y) \approx P_{\text{test}}(X, Y)$.
+The discrepancy between $P_\text{train}(X, Y)$ and $P_\text{dev}(X, Y)$ manifests itself in the form of problems such as overfitting~\citep{overfit_random_examples,dropout}, covariate shift~\citep{shimodaira2000improving}, and label shift~\citep{lipton2018detecting}.
+%exposure bias~\citep{dad_nmt,mixer_nmt} \gn{I'm not sure that this is a good example, as I think exposure bias is maybe a bigger feature of the loss function $\ell$ than the data mismatch? What about instead talking about ``co-variate shift'' and ``label shift'', e.g. \cite{lipton2018detecting}?}.
+Since we can assume that the data in $\mathcal{D}_\text{dev}$ is a better approximation of our test-time scenario, we argue that it is possible, and reasonable to use $\mathcal{D}_\text{dev}$ to inform a better strategy for utilizing our available data in $\mathcal{D}_\text{train}$.
+
+%We identify two issues with such formulation. First, while we seek a $\theta^*$, that minimizes $J(\theta)$ as in Eqn~\ref{eqn:generic_optim}, we evaluate $\theta^*$ on a development set $\mathcal{D}_\text{dev} = \{(x_i, y_i): i = 1, ..., N_\text{dev}\}$. While the distribution $P(X, Y)$ is unknown, in practice we can collect a relatively small development set $\mathcal{D}_\text{dev}$ with distribution $P_{\text{dev}}(X, Y) \approx P(X, Y)$.  The discrepancy between $P_\text{train}(X, Y)$ and $P_\text{dev}(X, Y)$ leads to various problems such as overfitting~\citep{overfit_random_examples,dropout} \paul{Overfitting is a property of the model, not the data. You can overfit a model on very good data} and exposure bias~\citep{dad_nmt,mixer_nmt}.\paul{So basically the point that this paragraph is trying to make is that the dev set has better quality and we should use that to inform our selection of training data right?}\cw{that's right}\paul{MAybe this could be made more explicit at the beginning of the paragraph. I'm not a fan of the first, [..], second construction here. How about: "in practice, it's hard to get good data in great quantity, [..]" and then explain the difference between train/dev.}
+
+% \an{The `we' in this paragraph is not the same as the `we' in the next paragraph. I think we shouldn't use `we' in the first one. Maybe `one' or a scientist... `she'}
+
+Specifically, we propose to replace the distribution $\text{Uniform}(\mathcal{D}_\text{train})$, with a parameterized distribution $p(X, Y; \psi)$ with support of $\mathcal{D}_\text{train}$ that brings the sampled data closer to $P_\text{dev}(X, Y)$ than when selected using the uniform distribution. In particular, $\mathcal{D}_\text{train}$ will be sampled by $\langle x, y \rangle \sim p(X, Y; \psi)$, 
+and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, p(X, Y;\psi))$ will approximately minimize $J(\theta, P_\text{dev}(X,Y))$: 
+%\gn{A little pedantic, but $\psi$ isn't included anywhere in Eqn~\ref{eqn:generic_optim}. I think one easy way to fix this is instead of having $P(X,Y)$ be the true data distribution (unknown), you could have it be ``an arbitrary distribution''. Then you could say that ``ideally, this would match the true data distribution, but unfortunately this is not known''} 
+\begin{equation}
+  \label{eqn:psi_theta_argmin}
+  \begin{aligned}
+    \psi^* = \argmin_\psi
+    \sum_{i=1}^{N_\text{dev}} \ell(x_i, y_i; \theta^*(\psi))
+    ~\text{where}~
+    \theta^*(\psi) = \argmin_\theta \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[ \ell(x, y; \theta) \right]
+  \end{aligned}
+\end{equation}
+Directly optimizing for $\psi^*$ as above is prohibitively expensive, since finding $\argmin_\theta J(\theta)$ is by itself an expensive process, \eg~training a big neural network on a big dataset. 
+Thus, we establish a mathematical formulation, which allows $\theta$ and $\psi$ to both be trained by stochastic gradient updates. As our method trains a differentiable distribution $p(X, Y; \psi)$ to select training data, we name the method \textit{Differentiable Data Selection}~(\dds).
+
+\subsection{\label{sec:diff_data_selection}Framework}
+For the rest of the section, we simply write the training objective $J(\theta, p(X, Y;\psi))$ as $J(\theta, \psi)$ for ease of notation. Similarly, we abbreviate the risk $J(\theta, \text{Uniform}(\mathcal{D}))$ over a dataset $\mathcal{D}$ as $J(\theta, \mathcal{D})$.
+
+For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochastic gradient update. Specifically, at time step $t$, we update
+\begin{equation}
+  \label{eqn:theta_update_rule}
+  \begin{aligned}
+    \theta_t \leftarrow \theta_{t-1} - g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big)
+  \end{aligned}
+\end{equation}
+where $g(\cdot)$ is any function that may be applied to the gradient $\nabla_\theta J(\theta_{t-1}, \psi)$. For instance, in standard gradient descent $g(\cdot)$ is simply a linear scaling of $\nabla_\theta J(\theta_{t-1}, \psi)$ by a learning rate $\eta_t$, while with the Adam optimizer~\citep{adam} $g$ also modifies the learning rate on a parameter-by-parameter basis.
+
+We now analyze how a stochastic update as in Eqn~\ref{eqn:theta_update_rule} affects $J(\theta_t, \mathcal{D}_{\text{dev}})$. 
+%\gn{Here, and in all following mentions, I think this should be $J(\theta, \mathcal{D}_{\text{dev}})$?}. \cw{eqn \ref{eqn:two_step_update} operates on $\ell(\mathbb{D}_\text{dev})$ so maybe it's easier to just use this?}
+%\gn{Do we even need the following sentence? We're already calculating the gradient in Eqn~\ref{eqn:theta_update_rule}, so if we've already assumed $J(\cdot)$ is differentiable there, we can probably assume so here as well.} \cw{It might be worth it to mention it here, since eqn\ref{eqn:theta_update_rule} does not mention $\ell(\mathbb{D}_\text{dev})$} 
+%\gn{Sometimes you're using $\theta_t$ and sometimes $\theta$. I'd be consistent (always use $\theta_t$)?} %To achieve this, we assume that $\ell(\mathcal{D}_\text{dev}; \theta_t)$ is differentiable with respect to $\theta_t$. This is not an unreasonable assumption,~\eg~log-likelihood objectives generally used in most neural prediction models are usually differentiable with respect to $\theta_t$. 
+Due to the relationship between $\theta_t$ and $\psi$ as in Eqn~\ref{eqn:theta_update_rule}, $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. 
+%Since evaluating  $J(\theta_t, \mathcal{D}_\text{dev})$ only requires $\theta_t$ and not $\psi$, 
+By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows:
+%\gn{The first line here was actually pretty hard to follow for me. I think $\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top$ should probably be $\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top$, and $\nabla_\psi \theta_t(\psi)$ should be $\nabla_\psi \theta_t$ maybe? If so, please correct. Also maybe $J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$?}
+\begin{equation}
+  \label{eqn:two_step_update}
+  \begin{aligned}
+    \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
+      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) &\text{(chain rule)} \\
+      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - g\big( \nabla_\theta J(\theta_{t-1}) \big) \right) &\text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update_rule})} \\
+      &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}) \big) &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} %\paul{why? doesn't sound like this would be the case. More specifically either you have a reason to say $\partial \theta_{t-1} / \partial \psi = 0$(and not $\approx$) or you must justify this experimentally.})}
+  \end{aligned}
+\end{equation}
+Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent:
+\begin{equation}
+  \label{eqn:psi_update_rule}
+  \begin{aligned}
+    \psi_{t+1} 
+      &\leftarrow \psi_t + \eta_\psi \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi_t) \big),
+  \end{aligned}
+\end{equation}
+where $\eta_\psi$ is the learning rate for $\psi$, which is a hyper-parameter. Note that Eqn \ref{eqn:psi_update_rule} involves a calculation of the nested gradient, which is similar to some ideas in prior work on optimization~\citep{hyper_grad}, meta-learning~\citep{finn2017model}, and neural architecture search~\citep{darts}. 
+%\gn{haha, a little more detail might be warranted here :) ``prior work on XXX (cite), YYY (cite), and ZZZ (cite)}. 
+However, we are the first to utilize the idea for data selection to reduce discrepancy between the training and dev sets. 
+
+\gn{Everyone, particularly Paul, what do you think?}
+One reasonable concern may be raised with this approach, in that we optimize $\psi_t$ directly on the dev set using $J(\theta_t, \mathcal{D}_\text{dev})$, which may risk indirectly overfitting model parameters $\theta_t$ by selecting a small subset of data that is overly specialized.
+However we do not observe this problem in practice, and posit that this because (1) the influence of $\psi_t$ on the final model parameters $\theta_t$ is quite indirect, and acts as a ``bottleneck'' which has similarly proven useful for preventing overfitting in neural models \cite{grezl2007probabilistic}, and (2) because the actual implementations of DDS~(which we further discuss in Section \ref{sec:formualtion}) only sample a subset of data from $\mathcal{D}_\text{dev}$ at each optimization step, further limiting expressivity.
+%\gn{Let me revive Paul's comment here: I think this is an important discussion (I believe I also brought this up when speaking with Cindy, independently of Paul, so this is definitely something people paying attention will notice). Let's try to add this somewhere, perhaps at the end of this section.}
+%\paul{One central comment here: one could argue that if your goal is to minimize $\ell_\text{dev}(\theta)$ you could just do gradient descent on the dev set (which is bad of course), furthermore under mild conditions \footnote{if $\ell_{\text{dev}}$ is within the linear span of all $\ell_{\text{train}}$ which is the case if $N>d$ and the gradients are linearly independent, and provided $p(\ldots;\psi)$ is sufficently expressive} it is in theory possible that you learn $\psi$ such that $\nabla J = \nabla \ell_{\text{dev}}$ . Therefore there needs to be some kind of regularization on $\psi$ such that this is not the case. Obviously your experimental result show that there is some kind of implicit regularization in your choice of model for $p(\ldots ; \psi)$ but it would be better to formulate this more explicitly, because this is for sure something that a reviewer might point out.}
+
+\dds~operates by alternating Eqn~\ref{eqn:theta_update_rule} and Eqn~\ref{eqn:psi_update_rule}, on batches of training data and dev data respectively. To implement Eqn~\ref{eqn:psi_update_rule}, we need two approximations.
+First, in practice the size of $\mathcal{D}_\text{train}$ is usually too large for exact calculation of the gradient $\nabla_\theta$. To overcome this difficulty, we adopt an importance sampling strategy. Specifically, for image classification experiments, we sample a subset of $\mathcal{D}_{\text{train}}$ with a uniform proposal distribution $\hat{x}, \hat{y} \sim \text{Uniform}(\mathcal{D}_\text{train})$, then scaling the probabilities in Eqn~\ref{eqn:psi_theta_argmin} by $p(\hat{x}, \hat{y}; \psi)$ over only this subset of data. Meanwhile, for multilingual NMT, we directly sample a subset with a proposal distribution $\hat{x}, \hat{y} \sim p(\mathcal{D}_\text{train}; \psi)$. Second, we need to calculate the gradient $\nabla_\psi g$. This step depends directly on the optimization algorithm that we use for $\theta$, and we discuss some concrete formulations in the following section.
+
+\section{\label{sec:grad_of_optimizers}Deriving $\nabla_\psi g$ for Different Optimizers}
+%\gn{It seems reasonable to have this as a top-level section, so I changed it accordingly this has started to get into details that are probably better to separate from the overall high-level idea of DDS.}
+
+Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent~(SGD) update, then provide examples for two other common optimization algorithms, namely Momentum~\citep{nesterov} and Adam~\citep{adam}.
+%\gn{It's not clear to me why you skip standard SGD without momentum? It seems like it'd make the most sense to start there, even if that's not what you finally use in experiments. If you use it in experiments then you definitely need to discuss it. Then when you explain momentum you could just point out the differences.}
+
+\paragraph{SGD Updates.} The SGD update rule for $\theta$ is as follows
+\begin{equation}
+  \label{eqn:sgd_update}
+  \begin{aligned}
+    \theta_t &\leftarrow \theta_{t-1} - \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
+  \end{aligned}
+\end{equation}
+where $\eta_t$ is the learning rate. Matching the updates in Eqn~\ref{eqn:sgd_update} with the generic framework in Eqn~\ref{eqn:theta_update_rule}, we can see that $g$ in Eqn~\ref{eqn:theta_update_rule} has the form: %\gn{$J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$? There seem to be a few of these inconsistencies below as well, so please check. Also, which time step of $\theta$ does the gradient depend on?}
+\begin{equation}
+  \label{eqn:momentum_update_g}
+  \begin{aligned}
+    g\big(\nabla_\theta J(\theta_{t-1}, \psi)\big) = \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
+  \end{aligned}
+\end{equation}
+This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$, allowing the exact differentiation of $g$ with respect to $\psi$. From Eqn~\ref{eqn:psi_update_rule}, we have
+\begin{equation}
+  \label{eqn:momentum_update_for_psi}
+  \begin{aligned}
+    &\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big) \\
+    &= \eta_t \cdot \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
+    &= \eta_t \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\left( J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)} \right]
+  \end{aligned}
+\end{equation}
+%\gn{This last paragraph was too dense for me to follow: could you please try to explain a little more?}
+Here, the last equation follows from the log-derivative trick in the REINFORCE algorithm~\citep{reinforce}. 
+%and can be implemented by Monte Carlo approximation.
+%\gn{again, a little more detail here would be useful}. 
+%Note we do not do reinforcement learning in this paper. Instead \gn{this ``instead'' was also not clear to me.}, we simply utilize the same log-derivative trick to compute $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$. 
+
+\paragraph{Momentum Updates.} The momentum update rule for $\theta$ is as follows
+\begin{equation}
+  \label{eqn:momentum_update}
+  \begin{aligned}
+    m_t &\leftarrow \mu_t m_{t-1} + \eta_t \nabla_\theta J(\theta_{t-1}, \psi) \\
+    \theta_t &\leftarrow \theta_{t-1} - m_t,
+  \end{aligned}
+\end{equation}
+where $\mu_t$ is the momentum coefficient and $\eta_t$ is the learning rate. This means that $g$ has the form:
+\begin{equation}
+  \label{eqn:momentum_update_g}
+  \begin{aligned}
+    g(x) &= \mu m_{t-1} + \eta_t x \\
+    g'(x) &= \eta_t
+  \end{aligned}
+\end{equation}
+Therefore, the computation of the gradient $\nabla_{\psi}$ for the Momentum update is exactly the same with the standard SGD update rule in Eqn \ref{eqn:momentum_update_for_psi}.
+%This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1})$, allowing the exact differentiation of $g$ with respect to $\psi$. From Eqn~\ref{eqn:psi_update_rule}, we have
+%\begin{equation}
+%  \label{eqn:momentum_update_for_psi}
+%  \begin{aligned}
+%    &\nabla \ell(\mathcal{D}_\text{dev}, \theta_t)^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big) \\
+%    &= \eta_t \cdot \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\ell(\mathcal{D}_\text{dev}, \theta_t)^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
+%    &= \eta_t \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\left( \ell(\mathcal{D}_\text{dev}, \theta_t)^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)} \right]
+%  \end{aligned}
+%\end{equation}
+%Here, the last equation is follows the log-derivative trick~\citep{reinforce}, and can be implemented by Monte Carlo approximation. Note we do not do reinforcement learning in this paper. Instead, we simply utilize the same log-derivative trick to compute $\nabla_\psi \ell(\mathcal{D}_\text{dev})$. 
+
+\paragraph{Adam Updates.} We use a slightly modified update rule based on Adam~\citep{adam}:
+\begin{equation}
+  \label{eqn:adam_update}
+  \begin{aligned}
+    &g_t \leftarrow \nabla_\theta J(\theta_{t-1}, \psi) \\
+    &v_t \leftarrow \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
+    &\hat{v}_t \leftarrow v_t / (1 - \beta_2^t) \\
+    &\theta_t \leftarrow \theta_{t-1} - \eta_t \cdot g_t / \sqrt{\hat{v}_t + \epsilon}
+  \end{aligned}
+\end{equation}
+where $\beta_2$ and $\eta_t$ are hyper-parameters. This means that $g$ is a component-wise operation of the form:
+\begin{equation}
+  \label{eqn:adam_update_g}
+  \begin{aligned}
+    g(x) &= \frac{\eta_t \sqrt{1 - \beta_2^t} \cdot x}{\sqrt{\beta_2 v_{t-1} + (1 - \beta_2) x^2 + \epsilon}} \\
+    g'(x) &= \frac{\eta_t \sqrt{1 - \beta_2^t} (\beta_2 v_{t-1} + \epsilon)}{\big( \beta_2 v_{t-1} + (1 - \beta_2) x^2 + \epsilon \big)^{3/2}} \approx \eta_t \sqrt{\frac{1 - \beta_2^t}{\beta_2 v_{t-1}}},  
+  \end{aligned}
+\end{equation}
+%\paul{So all of this is under the assumption that $v_{t-1}$ is independent on $\psi$ right? maybe bring it up?}
+the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. Here the approximation makes sense because we empirically observe that the individual values of the gradient vector $\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie~$g_t$, are close to $0$. Furthermore, for Adam, we usually use $\beta_2 = 0.999$. Thus, the value $(1 - \beta_2) x^2$ in the denominator of Eqn~\ref{eqn:adam_update_g} is negligible. With this approximation, the computation of the gradient $\nabla_\psi$ is almost the same with that for SGD in Eqn~\ref{eqn:momentum_update_for_psi}, with one extra component-wise scaling by the term in Eqn~\ref{eqn:adam_update_g}.
+
+\gn{I have checked carefully up to here.}

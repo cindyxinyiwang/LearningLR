@@ -1,0 +1,31 @@
+\section{\label{app} Appendix}
+
+\subsection{\label{app:nmt_hparam} Hyperparameters for multilingual NMT}
+In this section, we give a detailed description of the hyperparameters used for the multilingual NMT experiments.
+\begin{itemize}
+    \item We use a 1 layer LSTM with hidden size of 512 for both the encoder and decoder, and set the word embedding to size 128.
+    \item The dropout rate is set to 0.3.
+    \item For the NMT model, we use Adam optimizer with learning rate of 0.001. For the distribution parameter $\psi$, we use Adam optimizer with learning rate of 0.0001.
+    \item We train all models for 20 epochs without any learning rate decay.
+\end{itemize}
+
+\subsection{\label{app:nmt_data} Dataset statistics for Multilingual NMT}
+\begin{table}[H]
+%\begin{wraptable}{r}{4.3cm}
+  \centering
+   %\resizebox{0.3\textwidth}{!}{
+  \begin{tabular}{c|ccc|cc}
+  \toprule
+  \textbf{LRL} & \textbf{Train} & \textbf{Dev} & \textbf{Test} & \textbf{HRL} & \textbf{Train} \\
+  \midrule
+  aze & 5.94k &  671 &  903 & tur & 182k \\
+  bel & 4.51k &  248 &  664 & rus & 208k \\
+  glg & 10.0k &  682 & 1007 & por & 185k \\
+  slk & 61.5k & 2271 & 2445 & ces & 103k\\
+  \bottomrule
+  \end{tabular}
+  %}
+  \vspace{0.2cm}
+  \caption{\label{tab:nmt_data}Statistics of the multilingual NMT datasets.}
+% \end{wraptable}
+\end{table} 
