@@ -9,7 +9,7 @@ For image classification, we use CIFAR-10~\citep{cifar10} and ImageNet~\citep{im
 
 For multilingual NMT, we use the 58-language-to-English TED dataset~\citep{ted_pretrain_emb}. 
 Following prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,SDE}, we evaluate translation from four low-resource languages~(LRL) Azerbaijani~(\texttt{aze}), Belarusian~(\texttt{bel}), Galician~(\texttt{glg}), and Slovak~(\texttt{slk}) to English, where each is paired with a similar high-resource language Turkish~(\texttt{tur}), Russian~(\texttt{rus}), Portugese~(\texttt{por}), and Czech~(\texttt{ces}) (details in Appendix~\ref{app:nmt_data}).
-We use combine data from all 8 languages, and use DDS to optimize data selection for each LRL. 
+We combine data from all 8 languages, and use DDS to optimize data selection for each LRL. 
 
 \paragraph{Image Classification Models and Training Details.}
 For CIFAR-10, we use the pre-activation WideResNet-28~\citep{wide_res_net}, with a width factor $k=2$ for the reduced setting and $k=10$ for the normal setting. For ImageNet, we use the post-activation ResNet-50~\citep{res_net}.
@@ -156,4 +156,4 @@ This is a strong indication of both the consistency of the improvements that DDS
 
 Next, we can compare the results for NMT where we have specifically designed heuristics that either require linguistic knowledge (Related) or knowledge of the structural characteristics of the task (TCS).
 We can see that vanilla DDS performs favorably with respect to these state-of-the-art data selection baselines, outperforming each in 3 out of the 4 settings (with exceptions of slightly underperforming Related on \texttt{glg} and TCS on \texttt{aze}).
-In addition, we see that combining DDS with our existing heuristic knowledge in TCS+DDS further improves the results, leading to improvements over DDS alone in three out of four cases (with the exception of \texttt{slk}, where vanilla DDS already outperformed TCS.
+In addition, we see that combining DDS with existing heuristic knowledge in TCS+DDS further improves the results, leading to improvements over DDS alone in three out of four cases (with the exception of \texttt{slk}, where vanilla DDS already outperformed TCS.
