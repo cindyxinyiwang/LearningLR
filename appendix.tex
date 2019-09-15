@@ -1,5 +1,87 @@
 \section{\label{app} Appendix}
 
+\subsection{\label{app:grad_of_optimizers}Deriving $\nabla_\psi g$ for Different Optimizers}
+%\gn{It seems reasonable to have this as a top-level section, so I changed it accordingly this has started to get into details that are probably better to separate from the overall high-level idea of DDS.}
+
+Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent~(SGD) update, then provide examples for two other common optimization algorithms, namely Momentum~\citep{nesterov} and Adam~\citep{adam}.
+%\gn{It's not clear to me why you skip standard SGD without momentum? It seems like it'd make the most sense to start there, even if that's not what you finally use in experiments. If you use it in experiments then you definitely need to discuss it. Then when you explain momentum you could just point out the differences.}
+
+\paragraph{SGD Updates.} The SGD update rule for $\theta$ is as follows
+\begin{equation}
+  \label{eqn:sgd_update}
+   \small
+  \begin{aligned}
+    \theta_t &\leftarrow \theta_{t-1} - \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
+  \end{aligned}
+\end{equation}
+where $\eta_t$ is the learning rate. Matching the updates in Eqn~\ref{eqn:sgd_update} with the generic framework in Eqn~\ref{eqn:theta_update_rule}, we can see that $g$ in Eqn~\ref{eqn:theta_update_rule} has the form: %\gn{$J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$? There seem to be a few of these inconsistencies below as well, so please check. Also, which time step of $\theta$ does the gradient depend on?}
+\begin{equation}
+  \label{eqn:momentum_update_g}
+   \small
+  \begin{aligned}
+    g\big(\nabla_\theta J(\theta_{t-1}, \psi)\big) = \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
+  \end{aligned}
+\end{equation}
+This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$, allowing the exact differentiation of $g$ with respect to $\psi$. From Eqn~\ref{eqn:psi_update_rule}, we have
+\begin{equation}
+  \label{eqn:momentum_update_for_psi}
+   \small
+  \begin{aligned}
+    &\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big) \\
+    &= \eta_t \cdot \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
+    &= \eta_t \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\left( J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)} \right]
+  \end{aligned}
+\end{equation}
+%\gn{This last paragraph was too dense for me to follow: could you please try to explain a little more?}
+Here, the last equation follows from the log-derivative trick in the REINFORCE algorithm~\citep{reinforce}. 
+%and can be implemented by Monte Carlo approximation.
+%\gn{again, a little more detail here would be useful}. 
+%Note we do not do reinforcement learning in this paper. Instead \gn{this ``instead'' was also not clear to me.}, we simply utilize the same log-derivative trick to compute $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$. 
+
+\paragraph{Momentum Updates.} The momentum update rule for $\theta$ is as follows
+\begin{equation}
+  \label{eqn:momentum_update}
+   \small
+  \begin{aligned}
+    m_t &\leftarrow \mu_t m_{t-1} + \eta_t \nabla_\theta J(\theta_{t-1}, \psi) \\
+    \theta_t &\leftarrow \theta_{t-1} - m_t,
+  \end{aligned}
+\end{equation}
+where $\mu_t$ is the momentum coefficient and $\eta_t$ is the learning rate. This means that $g$ has the form:
+\begin{equation}
+  \label{eqn:momentum_update_g}
+   \small
+  \begin{aligned}
+    g(x) &= \mu m_{t-1} + \eta_t x \\
+    g'(x) &= \eta_t
+  \end{aligned}
+\end{equation}
+Therefore, the computation of the gradient $\nabla_{\psi}$ for the Momentum update is exactly the same with the standard SGD update rule in Eqn \ref{eqn:momentum_update_for_psi}.
+
+
+\paragraph{Adam Updates.} We use a slightly modified update rule based on Adam~\citep{adam}:
+\begin{equation}
+  \label{eqn:adam_update}
+   \small
+  \begin{aligned}
+    &g_t \leftarrow \nabla_\theta J(\theta_{t-1}, \psi) \\
+    &v_t \leftarrow \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
+    &\hat{v}_t \leftarrow v_t / (1 - \beta_2^t) \\
+    &\theta_t \leftarrow \theta_{t-1} - \eta_t \cdot g_t / \sqrt{\hat{v}_t + \epsilon}
+  \end{aligned}
+\end{equation}
+where $\beta_2$ and $\eta_t$ are hyper-parameters. This means that $g$ is a component-wise operation of the form:
+\begin{equation}
+  \label{eqn:adam_update_g}
+   \small
+  \begin{aligned}
+    g(x) &= \frac{\eta_t \sqrt{1 - \beta_2^t} \cdot x}{\sqrt{\beta_2 v_{t-1} + (1 - \beta_2) x^2 + \epsilon}} \\
+    g'(x) &= \frac{\eta_t \sqrt{1 - \beta_2^t} (\beta_2 v_{t-1} + \epsilon)}{\big( \beta_2 v_{t-1} + (1 - \beta_2) x^2 + \epsilon \big)^{3/2}} \approx \eta_t \sqrt{\frac{1 - \beta_2^t}{\beta_2 v_{t-1}}},  
+  \end{aligned}
+\end{equation}
+%\paul{So all of this is under the assumption that $v_{t-1}$ is independent on $\psi$ right? maybe bring it up?}
+the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. Here the approximation makes sense because we empirically observe that the individual values of the gradient vector $\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie~$g_t$, are close to $0$. Furthermore, for Adam, we usually use $\beta_2 = 0.999$. Thus, the value $(1 - \beta_2) x^2$ in the denominator of Eqn~\ref{eqn:adam_update_g} is negligible. With this approximation, the computation of the gradient $\nabla_\psi$ is almost the same with that for SGD in Eqn~\ref{eqn:momentum_update_for_psi}, with one extra component-wise scaling by the term in Eqn~\ref{eqn:adam_update_g}.
+
 \subsection{\label{app:nmt_hparam} Hyperparameters for multilingual NMT}
 In this section, we give a detailed description of the hyperparameters used for the multilingual NMT experiments.
 \begin{itemize}
@@ -36,4 +118,11 @@ In this section, we provide some additional details for the image classification
   \item We use the cosine learning rate decay schedule~\citep{cosine_lr}, starting at $0.1$ for CIFAR-10 and $3.2$ for ImageNet, both with $2000$ warmup steps. 
   \item We maintain a moving average of all model parameters with the rate of $0.999$. Following~\citet{imagenet_generalize_better}, we treat the moving statistics of batch normalization~\citep{batch_norm} as \textit{untrained parameters} and also add them to the moving averages. 
 \end{itemize}
+
+%\subsection{\label{app:image_detail} Training details for image classification}
+%Our experiments were conducted on second-generation Tensor Processing Units (TPUv2). There were several important implementation details related to improving training efficiency with DDS for ImageNet models (these were not needed for the smaller CIFAR-10 training set). First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the DDS model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the DDS model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example.
+
+\subsection{Training Time}
+For NMT, the baseline TCS takes 10 hours, and DDS takes about 24 hours to finish. Our NMT code is not optimized and can potentially be made much more efficient. 
+For CIFAR-10, DDS take about $9$ hours, while experiments without DDS takes $5.5$ hours, and for ImageNet, these take $4$ hours and $6$ hours approximately. 
 

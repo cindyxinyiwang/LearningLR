@@ -5,12 +5,13 @@
 % before loading neurips_2019
 
 % ready for submission
-\usepackage[nonatbib]{neurips_2019}
+%\usepackage[nonatbib]{neurips_2019}
+\usepackage{iclr2020_conference,times}
 % \usepackage{neurips_2019}
 % \usepackage[nonatbib,preprint]{neurips_2019}
 % \usepackage[nonatbib,final]{neurips_2019}
 
-\newcommand{\dds}{DDS}
+\newcommand{\dds}{DAW}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -19,6 +20,7 @@
 
 \usepackage[linesnumbered,ruled]{algorithm2e}
 \usepackage{adjustbox}
+\usepackage{mathtools}
 
 \newcommand{\gn}[1]{\textcolor{magenta}{\bf\small [#1 --GN]}}
 \newcommand{\gnc}[2]{\textcolor{magenta}{\sout{#1} #2}}
@@ -31,7 +33,7 @@
 
 
 
-\title{Differentiable Data Selection}
+\title{Differentiable Adaptive Weighting for Data Selection of Deep Models}
 
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
@@ -77,17 +79,18 @@
 
 \maketitle
 
-\input{abstract.tex}
-\input{introduction.tex}
-\input{method.tex}
+\input{abstract_iclr.tex}
+\input{introduction_iclr.tex}
+\input{method_iclr.tex}
 \input{formulation.tex}
 \input{experiment.tex}
 \input{analysis.tex}
 \input{related_work.tex}
 \input{conclusion.tex}
+\newpage
 
 \bibliography{main}
-\bibliographystyle{plainnat}
+\bibliographystyle{iclr2020_conference}
 
 \newpage
 \appendix
