@@ -1,6 +1,6 @@
 \section{\label{sec:experiment}Experiments}
 %\gn{You need at least one sentence of lead-in here.}
-In this section, we discuss the experimental results of \dds~on both image classification, an instance of the general classification problem using Algorithm \ref{alg:image_classification_\dds}, as well as a special case of multilingual NMT using Algorithm \ref{alg:nmt_\dds}.
+In this section, we discuss the experimental results of \dds~on both image classification, an instance of the general classification problem using Algorithm \ref{alg:image_classification_dds}, as well as a special case of multilingual NMT using Algorithm \ref{alg:nmt_dds}.
 
 \subsection{\label{exp:settings}Experimental Settings}
 
@@ -8,12 +8,13 @@ In this section, we discuss the experimental results of \dds~on both image class
 For image classification, we use CIFAR-10~\citep{cifar10} and ImageNet~\citep{imagenet}. For each dataset, we consider two settings: a reduced setting where only roughly 10\% of the training labels are used, and a full setting, where all labels are used. Specifically, the reduced setting for CIFAR-10 uses the first $4000$ examples in the training set, and with ImageNet, the reduced setting uses the first $102$ TFRecord shards as pre-processed by~\citet{imagenet_generalize_better}. We use the size of $224 \times 224$ for ImageNet.
 
 For multilingual NMT, we use the 58-language-to-English TED dataset~\citep{ted_pretrain_emb}. 
-Following prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,SDE}, we evaluate translation from four low-resource languages~(LRL) Azerbaijani~(\texttt{aze}), Belarusian~(\texttt{bel}), Galician~(\texttt{glg}), and Slovak~(\texttt{slk}) to English, where each is paired with a similar high-resource language Turkish~(\texttt{tur}), Russian~(\texttt{rus}), Portugese~(\texttt{por}), and Czech~(\texttt{ces}) (details in Appendix~\ref{app:nmt_data}).
+Following prior work~\citep{ted_pretrain_emb,rapid_adapt_nmt,sde}, we evaluate translation from four low-resource languages~(LRL) Azerbaijani~(\texttt{aze}), Belarusian~(\texttt{bel}), Galician~(\texttt{glg}), and Slovak~(\texttt{slk}) to English, where each is paired with a similar high-resource language Turkish~(\texttt{tur}), Russian~(\texttt{rus}), Portugese~(\texttt{por}), and Czech~(\texttt{ces}) (details in Appendix~\ref{app:nmt_data}).
 We combine data from all 8 languages, and use \dds~to optimize data selection for each LRL. 
 
 \paragraph{Image Classification Models and Training Details.}
 For CIFAR-10, we use the pre-activation WideResNet-28~\citep{wide_res_net}, with a width factor $k=2$ for the reduced setting and $k=10$ for the normal setting. For ImageNet, we use the post-activation ResNet-50~\citep{res_net}. 
-The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 200K steps and 40K steps, respectively. We use the standard Momentum update for the \dds~model parameter $\theta$, and the derived Momentum update rule in Section~\ref{sec:grad_of_optimizers} for the \dds~distribution parameter $\psi$, both with the momentum rate of $0.9$.
+The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 200K steps and 40K steps, respectively. 
+%We use the standard Momentum update for the \dds~model parameter $\theta$, and the derived Momentum update rule in Section~\ref{sec:grad_of_optimizers} for the \dds~distribution parameter $\psi$, both with the momentum rate of $0.9$.
 These implementations reproduce the numbers commonly reported in the literature~\citep{wide_res_net,res_net,resnext}, and additional training details can be found in Appendix \ref{app:image_hparam}.
 
 
@@ -28,10 +29,10 @@ More details are noted in Appendix \ref{app:nmt_hparam}.
 
 \paragraph{Data Selection Methods.}
 For both image classification and multi-lingual NMT, we compare the following data selection methods.
-\textbf{Uniform} where data is selected uniformly from all of the data that we have available, as is standard in training models.
+\textbf{Uniform} where data is selected uniformly from all of the data that we have available, as is standard in training models. \textbf{SPCL}~\citep{}, a curriculum learning method that focuses more on the ``easy'' training examples based on model loss, so that the training curriculum is dynamically updated throughout training.
 \textbf{\dds}, our proposed method.
 
-For image classification, 
+For image classification, we have two additional methods for the Cifar-10 experiments. \textbf{MentorNet}~\citep{}: a recently proposed curriculum learning method that optimizes a neural network to determine the training curriculum of the main model. \textbf{retrained \dds}: we first train a model and a scorer using the standard \dds till convergence; then we reinitialize the model parameters and train the model again using \dds.
 
 For machine translation, we also compare with two state-of-the-art heuristic methods for multi-lingual data selection.
 \textbf{Related} where data is selected uniformly from the target LRL and a linguistically related HRL, the choice of which requires deep domain knowledge \citep{rapid_adapt_nmt}.
@@ -91,7 +92,7 @@ We also experiment with a hybrid \textbf{TCS+\dds} of our proposed method and TC
         96.31$\pm$ 0.13 &
         \textbf{56.81}/\textbf{79.51} &
         \textbf{77.23}/\textbf{93.57} \\
-         pretrain+\dds     &
+         retrained \dds     &
         \textbf{85.56}$\pm$\textbf{0.20} &
         \textbf{97.91}$\pm$\textbf{0.12} &
         - &
