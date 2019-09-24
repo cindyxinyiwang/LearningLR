@@ -1,7 +1,10 @@
-\section{\label{sec:method} Differentiable Adaptive Weighting}
-\subsection{\label{sec:dds_motivation}Framework}
+\section{\label{sec:method} Differentiable Data Selection}
+%\gn{Here the explanation is definining a bunch of variables without explaining how they are actually used in equations. This makes things at the beginning seem quite vague and it's hard to tell exactly what you're doing. I'd follow the more standard ML practice of defining variables at the same time that you define the equations that use them. For example, shortly after (or before) you define the variables that are used in the scoring network, define what function the scoring network calculates. I think the previous version of the paper was quite good at doing this, so maybe go back and look at that and do something similar?}
 
-Commonly in machine learning, we seek to find parameters $\theta$ that minimize the \emph{risk} $J(\theta,P)$, the expected value of a loss function $\ell(x, y; \theta)$, where $\langle x, y \rangle$ are pairs of inputs and associated labels sampled from a particular distribution $P(X, Y)$:
+\subsection{\label{sec:dds_motivation}Risk, Training, and Development Sets}
+%\gn{I suggested some more descriptive section titles. Please take a look.}
+
+Commonly in machine learning, we seek to find the parameters $\theta^*$ that minimize the \emph{risk} $J(\theta,P)$, the expected value of a loss function $\ell(x, y; \theta)$, where $\langle x, y \rangle$ are pairs of inputs and associated labels sampled from a particular distribution $P(X, Y)$:
 \begin{equation}
   \label{eqn:generic_optim}
    \small
@@ -12,60 +15,68 @@ Commonly in machine learning, we seek to find parameters $\theta$ that minimize 
   \end{aligned}
 \end{equation}
 
-In the ideal case, we would like the risk $J(\cdot)$ to be minimized over the inputs and outputs that we will expect our system to see at test time, defined as $P_{\text{test}}(X,Y)$.
+Ideally, we would like the risk $J(\cdot)$ to be minimized over the data distribution that our system sees at test time, ie.~$P_{\text{test}}(X,Y)$.
+Unfortunately, this distribution is unknown at training time, so instead we collect a training set $\mathcal{D}_\text{train} = \{(x_i, y_i): i = 1, ..., N_\text{train}\}$ with distribution $P_\text{train}(X, Y) = \text{Uniform}(\mathcal{D}_\text{train})$, and minimize the \emph{empirical risk} by taking $\langle x, y \rangle \sim P_\text{train}(X, Y)$.
+Since we need a sufficiently large training set $\mathcal{D}_\text{train}$ to train a good model, it is hard to ensure that $P_\text{train}(X, Y) \approx P_{\text{test}}(X, Y)$. In fact, we often accept that training data comes from a different distribution than test data.
+The discrepancy between $P_\text{train}(X, Y)$ and $P_\text{test}(X, Y)$ manifests itself in the form of problems such as overfitting~\citep{overfit_random_examples,dropout}, covariate shift~\citep{shimodaira2000improving}, and label shift~\citep{lipton2018detecting}.
 
-To quantify the importance of training data, we propose to replace the distribution $\text{Uniform}(\mathcal{D}_\text{train})$, with a parameterized distribution $p(X, Y; \psi)$ with support of $\mathcal{D}_\text{train}$. In particular, data will be sampled by $\langle x, y \rangle \sim p(X, Y; \psi)$, 
-and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, p(X, Y;\psi))$ will approximately minimize $J(\theta, P_\text{dev}(X,Y))$: 
+However, unlike the large training set, we can collect a relatively small development set $\mathcal{D}_\text{dev}= \{(x_i, y_i): i = 1, ..., N_\text{dev}\}$ with distribution $P_{\text{dev}}(X, Y)$ which is much closer to $P_{\text{test}}(X, Y)$.
+Since $\mathcal{D}_\text{dev}$ is a better approximation of our test-time scenario, we can use $\mathcal{D}_\text{dev}$ to get reliable feedback to learn to better utilize our training data from $\mathcal{D}_\text{train}$. In particular, we propose to train a \emph{scorer} network, parameterized by $\psi$, to provide guidance on training data usage to minimize $J(\theta, \mathcal{D}_\text{dev})$ .
+
+
+%\subsection{\label{sec:dds_motivation}Notation}
+%We use $\theta$, $\psi$ to denote the parameters of the main model being trained and the scorer network respectively. $\mathcal{D}_\text{train}$, $\mathcal{D}_\text{dev}$ represent the train and development datasets. $\langle x, y \rangle$ 
+%%\paul{you are not really using the fact that $x$ and $y$ are different things so I suggest you say "$z=(x, y)$ represents a sample" and then use $z$ instead of $x,y$ in the rest of the exposition} 
+%represents a pair of data instance, and $X, Y$ represents the support of their corresponding distributions. The loss function to optimize is $\ell(\cdot)$ \gn{define this in equations}, and the risk $J(\cdot)$ \gn{define this in equations} represents the expected value of the loss function over a particular data distribution.
+
+\subsection{\label{sec:efficient_reward} Reinforcement Learning for Optimizing Data Usage}
+We propose to optimize the scorer's parameters $\psi$ in an RL setting.
+%so that it can provide feedback about the effect of an example on the model's performance on the dev set, most existing work relies on an RL setting~\citep{rl_nmt,learn_to_teach,learn_active_learn}.
+Our \emph{environment} is the model state $\theta$ and an example $\langle x, y \rangle$. Our RL \emph{agent} is the scorer network $\psi$, which optimizes the data usage for the current model state. The agent's~\emph{reward} on picking an example approximates the dev set performance of the resulting model after the model is updated on this example.
+%\gn{One thing that is not clear throughout the description below is whether the action of the scorer network is to \emph{sample} an example or \emph{weight} an already-sampled example. In this section, it seems like it's the latter, but then in the next section it suddenly switches to talking about sampling. This probably needs to be made clear.}
+
+% To optimize the scorer's parameters $\psi$ so that it can provide feedback about the effect of an example on the model's performance on the dev set, most existing work relies on an RL setting~\citep{rl_nmt,learn_to_teach,learn_active_learn}. Generally, the \emph{environment} is the model state $\theta$ and the data $\langle x, y \rangle$. The \emph{agent} to optimize is the scorer network $\psi$, which provides the value of the data for a given model state. The \emph{reward} for training on a given data is generally measured using change in dev set performance. 
+
+% However, the above RL framework is difficult to implement in practice for two reasons. First, to make the agent, or scorer network, adaptive to the model state, it is generally formulated as a function of features from both the model training state and the data~\citep{rl_nmt,learn_to_teach,mentornet}. However, the feature design is a complicated problem in itself and might involve heuristic estimates. Second, the reward being the dev set performance change makes optimization difficult. Formally, the reward can be written as $\Delta J_{\text{dev}}(x, y) = J(\theta_t, \mathcal{D}_\text{dev}) - J(\theta_{t-1}, \mathcal{D}_\text{dev})$, where $\theta_t$ is the new model parameter after updating $\theta_{t-1}$ using the training data $(x, y)$. If we want to get clear credit assignment of a single training data pair $(x, y)$, its reward $\Delta J_{\text{dev}}(x, y)$ would be very noisy, because in practice the dev set is relatively small. To reduce the variance in $\Delta J_{\text{dev}}(x, y)$, we need a large number of training pairs $(x, y) = \{(x_0, y_0), (x_1, y_1), ..., (x_i, y_i)\}$. These examples would all get assigned the same amount of reward, while they might have different level of actual influence on the final model performance.
+
+Our scorer network is parameterized as a differentiable function that only takes as inputs the features of the example $\langle x, y \rangle$. Intuitively, it represents a distribution over the training data where more important data has a higher probability of being used, denoted $P(X, Y; \psi)$. Unlike prior methods which generally require complicated featurization of both the model state and the data as input to the RL agent~\citep{learn_to_teach,mentornet,learn_active_learn}, our formulation is much simpler and  generalizable to different tasks. Since our scorer network does not consider the model parameters $\theta_t$ as input, we update it iteratively with the model so that at training step $t$, $P(X, Y; \psi_t)$ provides an up-to-date data scoring feedback for a given $\theta_t$. %This design makes our scorer network task-agnostic %\gn{This is not entirely true, as the network needs to encode $\langle x, y\rangle$, and the method to do so is task specific. This is probably just a problem of wording, but we should try to be precise. Also, it's not clear what the alternative, non-task-agnostic method would be. If you're trying to draw a contrast to previous work, for example, it would be good to state it explicitly.}.
+
+Although the above formulation is simpler and more general, it requires much more frequent updates to the scorer parameter $\psi$. Existing RL frameworks simply use the change in dev set risk as the regular reward signal, which makes the update expensive and unstable~\citep{learn_to_teach,rl_nmt}. Therefore, we propose a novel reward function as an approximation to $\Delta J_{\text{dev}}(x, y)$ to quantify the effect of the training example $\langle x, y \rangle$. Inspired by \citet{cos_sim} (which uses gradient similarity between two tasks to measure the adaptation effect between them, we use the agreement between the model gradient on data $\langle x, y \rangle$ and the gradient on the dev set to approximate the effect of $\langle x, y \rangle$ on dev set performance. This reward simply implies that we prefer data that moves $\theta$ in the direction that minimizes the dev set risk: 
+\begin{align}
+    \label{eqn:reward_fn}
+    R(x, y) = \Delta J_{\text{dev}}(x, y) \approx \nabla_\theta \ell(x, y; \theta_{t-1})^\top \cdot \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev}) 
+\end{align}
+
+According to the REINFORCE algorithm~\citep{reinforce}, the update rule for $\psi$ is thus
+\begin{align}
+    \label{eqn:psi_update}
+    \psi_{t+1} \leftarrow  \psi_t + \eta \underbrace{\nabla_\theta \ell(x, y; \theta_{t-1}) \cdot \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})}_{\mathclap{R(x, y)}} \nabla_\psi \text{log}(P(X, Y;\psi))
+\end{align}
+where $\eta$ is the learning rate for the scorer parameter $\psi$. The update rule for the model is simply
+\begin{align}
+    \label{eqn:theta_update}
+    \theta_t \leftarrow \theta_{t-1} + \alpha \nabla_\theta J(\theta_{t-1}, P(X, Y;\psi))
+\end{align}
+where $\alpha$ is the learning rate for the model. By alternating between Eqn.~\ref{eqn:theta_update} and Eqn.~\ref{eqn:psi_update}, we can iteratively update $\theta$ using the guidance from the scorer network, and update $\psi$ to optimize the scorer using feedback from the model.  
+
+Note our formulation of scorer network as $P(X, Y; \psi)$ has several additional advantages. First, it provides the flexibility that we can either sample a training instance directly using the scorer, or equivalently scale the update from the training instance based on its score. Second, it allows easy integration of prior knowledge of the data, which is further shown to be effective 
+
+\subse quitectictionon{\l \refabein Sel{sec:diff_data_selection}Deriving Rewards through Direct Differentiation}
+In this section, we show that the update for the scorer network in Eqn.~\ref{eqn:psi_update} can be approximately derived as the solution of a bi-level optimization problem~\citep{bilevel_optim}, which has been applied to many different lines of research~\citep{hyper_grad,darts,learn_reweight}. 
+
+Under our framework, the scorer samples the data by $\langle x, y \rangle \sim P(X, Y; \psi)$, and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, P(X, Y;\psi))$ will approximately minimize $J(\theta, P_\text{dev}(X,Y))$: 
 \begin{equation}
   \label{eqn:psi_theta_argmin}
    \small
   \begin{aligned}
     \psi^* = \argmin_\psi
-    \sum_{i=1}^{N_\text{dev}} \ell(x_i, y_i; \theta^*(\psi))
+  J(\theta^*(\psi), \mathcal{D}_\text{dev}) 
     ~\text{where}~
-    \theta^*(\psi) = \argmin_\theta \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[ \ell(x, y; \theta) \right]
+    \theta^*(\psi) = \argmin_\theta \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[ \ell(x, y; \theta) \right]
   \end{aligned}
 \end{equation}
 
-Intuitively, $p(X, Y;\psi)$ is the optimal training data importance weight that adapts to the current model state $\theta$. Note that although the data importance weight is only parameterized by $\psi$, it is constantly optimized together with $\theta$ to provide an adaptive data usage ``guidance''. We name this formulation as Adaptive Importance Training. For the rest of the section, we abbreviate the training objective $J(\theta, p(X, Y;\psi))$ as $J(\theta, \psi)$ for ease of notation. Similarly, we abbreviate the risk $J(\theta, \text{Uniform}(\mathcal{D}))$ over a dataset $\mathcal{D}$ as $J(\theta, \mathcal{D})$.
-
-\subsection{\label{sec:efficient_reward} Adaptive Weighting}
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]{figs/method_plot_crop.pdf}
-    \caption{The general workflow of \dds.}
-    \label{fig:method}
-\end{figure}
-
-In this section, we provide an intuitive explanation of how we update the model parameter $\theta$ and its adaptive weighting parameter $\psi$. Given the current optimal $\psi_t$ at time $t$, we can update $\theta$ as
-\begin{align}
-    \label{eqn:theta_update}
-    \theta_t \leftarrow \theta_{t-1} + \alpha \nabla_\theta J(\theta_{t-1}, \psi_t)
-\end{align}
-where $\alpha$ is the learning rate for the model parameter $\theta$. The key problem left is, how can we optimize $\psi$ so that it provides the up-to-date data importance weights for the model $\theta_t$ at any time $t$ during training?
-
-A straight-forward optimization strategy for $\psi$ is through Reinforcement Learning~(RL). Figure \ref{fig:method} illustrates the general framework of our method, where we can formulate the basic RL components as: the \textbf{agent} to optimize is the scorer, or data weighting function $P(x, y; \psi)$; the \textbf{state} is the current model parameter $\theta$; the \textbf{reward} $R(x, y)$ is the change in dev set risk $\Delta J_{\text{dev}}(x, y) = J(\theta_t, \mathcal{D}_\text{dev}) - J(\theta_{t-1}, \mathcal{D}_\text{dev})$, where $\theta_t$ is the new model parameter after updating $\theta_{t-1}$ using the training data $(x, y)$.
-
-However, the above RL framework is difficult to implement in practice because of the drastic variance and credit assignment trade off in the reward function $\Delta J_{\text{dev}}(x, y)$: if we want to get clear credit assignment of a single training data pair $(x, y)$, its reward $\Delta J_{\text{dev}}(x, y)$ would be very noisy; to reduce the variance in $\Delta J_{\text{dev}}(x, y)$, we need a large number of training pairs $(x, y) = \{(x_0, y_0), (x_1, y_1), ..., (x_i, y_i)\}$. These examples would all get assigned the same amount of reward, while ideally they might have different level of influence on the final model performance.
-
-To address this difficulty, we propose a novel reward function as an approximation to $\Delta J_{\text{dev}}(x, y)$ to quantify the effect of the training data $(x, y)$. In general, we prefer data that moves $\theta$ in the direction that minimizes the dev set risk. Therefore, we can use the agreement between the model gradient on data $(x, y)$ and the gradient on the dev set to approximate the \textit{change} in dev set risk brought by $(x, y)$. That is, 
-\begin{align}
-    \label{eqn:reward_fn}
-    R(x, y) = \Delta J_{\text{dev}}(x, y) \approx \nabla_\theta \ell(x, y; \theta_{t-1}) \cdot \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev}) 
-\end{align}
-
-According to the REINFORCE algorithm, the update rule for $\psi$ is thus
-\begin{align}
-    \label{eqn:psi_update}
-    \psi_{t+1} \leftarrow  \psi_t + \eta \underbrace{\nabla_\theta \ell(x, y; \theta_{t-1}) \cdot \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})}_{\mathclap{R(x, y)}} \nabla_\psi \text{log}(P(X, Y;\psi))
-\end{align}
-where $\eta$ is the learning rate for the data importance parameter $\psi$. As shown in Figure \ref{fig:method}, by alternating between Eqn. \ref{eqn:theta_update} and Eqn. \ref{eqn:psi_update}, we can iteratively update $\theta$ using the adaptively weighted training data, and update $\psi$ to optimize data weighting for $\theta$. Now that we explain the intuition behind our method, we provide the mathematical derivation of the update rules in the next section.  
-
-\subsection{\label{sec:diff_data_selection}Direct Differentiation}
-
-The connection between $\psi$ and $\theta$ in Eqn. \ref{eqn:psi_theta_argmin} shows that $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. Notably, it is a specific case of bi-level optimization~\citep{bilevel_optim}, which has been applied to works on optimization~\citep{hyper_grad}, meta-learning~\citep{finn2017model}, and neural architecture search~\citep{darts}. To our knowledge, we are the first to utilize bi-level optimization for data selection. 
-
-By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows:
+The connection between $\psi$ and $\theta$ in Eqn. \ref{eqn:psi_theta_argmin} shows that $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. Now we can approximately compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows \gn{The labels of the following equation are outside of the right margin. Try to fix this (I tried using negative ``hspace'' but unfortunately that  didn't work.)}:
 \begin{equation}
   \label{eqn:two_step_update}
    \small
@@ -74,27 +85,26 @@ By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) &\text{(chain rule)} \\
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - \nabla_\theta J(\theta_{t-1}, \psi) \right) &\text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update})} \\
       &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi  \left( \nabla_\theta J(\theta_{t-1}, \psi) \right) &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} \\
-      &= \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
-    &= \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\left( J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)} \right]
+      &= \nabla_\psi \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
+    &= \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\left( \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{P(x, y; \psi)} \right]
   \end{aligned}
 \end{equation}
-Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent:
-\begin{equation}
-  \label{eqn:psi_update_rule}
-   \small
-  \begin{aligned}
-    \psi_{t+1} 
-      &\leftarrow \psi_t + \eta \left( J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)},
-  \end{aligned}
-\end{equation}
-where $\eta$ is the learning rate for $\psi$, which is a hyper-parameter. Now we can see that our derived update rule Eqn. \ref{eqn:psi_update_rule} matches the RL update rule according to our proposed reward function in Eqn. \ref{eqn:psi_update}. Since our formulation allows direct differentiation to optimize $\psi$, we name it Differentiable Adaptive Weighting~(\dds).
+Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn.~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent, which is exactly the same as the RL update rule in Eqn.~\ref{eqn:psi_update}.
+%\gn{This is exactly the same as equation 3. We can just reference equation 3 instead of rewriting it here. This will also save a lot of space, we can basically remove the rest of this paragraph (including the name of the method.)}:
+%\begin{equation}
+%  \label{eqn:psi_update_rule}
+%   \small
+%  \begin{aligned}
+%    \psi_{t+1} 
+%      &\leftarrow \psi_t + \eta \left(\nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{P(x, y; \psi)},
+%  \end{aligned}
+%\end{equation}
+%where $\eta$ is the learning rate for $\psi$, which is a hyper-parameter. Now we can see that our derived update rule Eqn. \ref{eqn:psi_update_rule} matches the update rule for the scorer network in Eqn. \ref{eqn:psi_update}. Since the update rule for our scorer network approximately follows a direct differentiation to optimize $\psi$, we name it Differentiable Adaptive Teaching~(\dds) \gn{If you don't delete this part, make sure to fix the name here.}.
 
-The connection between our design of the reward function and the direct derivation of the gradient of $\psi$ raises a potential concern with our approach: because we optimize $\psi_t$ directly on the dev set using $J(\theta_t, \mathcal{D}_\text{dev})$, we may risk indirectly overfitting model parameters $\theta_t$ by selecting a small subset of data that is overly specialized.
-However we do not observe this problem in practice, and posit that this because (1) the influence of $\psi_t$ on the final model parameters $\theta_t$ is quite indirect, and acts as a ``bottleneck'' which has similarly proven useful for preventing overfitting in neural models \cite{grezl2007probabilistic}, and (2) because the actual implementations of DDS~(which we further discuss in Section \ref{sec:formualtion}) only samples a subset of data from $\mathcal{D}_\text{train}$ at each optimization step, further limiting expressivity.
+%To implement Eqn~\ref{eqn:psi_update} we need two approximations. First, in practice the size of $\mathcal{D}_\text{train}$ is usually too large for exact calculation of the gradient $\nabla_\theta$. To overcome this difficulty, we adopt an importance sampling strategy, which can be implemented in two ways: (1) We can sample a subset of $\mathcal{D}_{\text{train}}$ with a uniform proposal distribution $\hat{x}, \hat{y} \sim \text{Uniform}(\mathcal{D}_\text{train})$, then scale the probabilities in Eqn~\ref{eqn:psi_theta_argmin} by $p(\hat{x}, \hat{y}; \psi)$ over only this subset of data. (2) We can similarly sample a subset of $\mathcal{D}_{\text{train}}$ uniformly, but then take a Monte-Carlo estimate of this quantity by further sub-sampling the data according to $p(\hat{x}, \hat{y}; \psi)$. Second, the exact gradient for $\psi$ depends on the optimization algorithm that we use for $\theta$, and we discuss details of the derivations in Appendix \ref{app:grad_of_optimizers}.
 
+Note that our derivation above does not take into the account that we might use different optimizing algorithms, such as SGD or Adam~\citep{adam}, to update $\theta$. We provide detailed derivations for several popular optimization algorithms in Appendix \ref{app:grad_of_optimizers}.
 
-\dds~operates by alternating Eqn~\ref{eqn:theta_update} and Eqn~\ref{eqn:psi_update} on batches of training data and dev data respectively. To implement Eqn~\ref{eqn:psi_update_rule} we need two approximations.
-First, in practice the size of $\mathcal{D}_\text{train}$ is usually too large for exact calculation of the gradient $\nabla_\theta$. To overcome this difficulty, we adopt an importance sampling strategy, which can be implemented in two ways:
-(1) We can sample a subset of $\mathcal{D}_{\text{train}}$ with a uniform proposal distribution $\hat{x}, \hat{y} \sim \text{Uniform}(\mathcal{D}_\text{train})$, then scale the probabilities in Eqn~\ref{eqn:psi_theta_argmin} by $p(\hat{x}, \hat{y}; \psi)$ over only this subset of data.
-(2) We can similarly sample a subset of $\mathcal{D}_{\text{train}}$ uniformly, but then take a Monte-Carlo estimate of this quantity by further sub-sampling the data according to $p(\hat{x}, \hat{y}; \psi)$.
-Second, the exact gradient for $\psi$ depends on the optimization algorithm that we use for $\theta$, and we discuss some concrete formulations in Appendix \ref{app:grad_of_optimizers}.
+One potential concern with our approach is that because we optimize $\psi_t$ directly on the dev set using $J(\theta_t, \mathcal{D}_\text{dev})$, we may risk indirectly overfitting model parameters $\theta_t$ by selecting a small subset of data that is overly specialized.
+However we do not observe this problem in practice, and posit that this because (1) the influence of $\psi_t$ on the final model parameters $\theta_t$ is quite indirect, and acts as a ``bottleneck'' which has similarly proven useful for preventing overfitting in neural models \cite{grezl2007probabilistic}, and (2) because the actual implementations of \dds~(which we further discuss in Section \ref{sec:formualtion}) only samples a subset of data from $\mathcal{D}_\text{train}$ at each optimization step, further limiting expressivity.
+

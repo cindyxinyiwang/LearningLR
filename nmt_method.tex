@@ -1,9 +1,9 @@
 \subsection{\label{sec:nmt_method}Formulation for Multilingual NMT}
 
-In this section, we demonstrate an application of DDS to multilingual models for NMT, specifically applied to improving accuracy on low-resource languages (LRL)~\citep{nmt_transfer,rapid_adapt_nmt,johnson_nmt}.
+Next we demonstrate an application of \dds~to multilingual models for NMT, specifically for improving accuracy on low-resource languages (LRL)~\citep{nmt_transfer,rapid_adapt_nmt}.
 In this setting, we assume that we have a particular LRL $S$ that we would like to translate into target language $T$, and we additionally have a multilingual corpus $\mathcal{D}_{\text{train}}$ that has parallel data between $n$ source languages $(S_1, S_2, ..., S_n)$ and target language $T$.
 We would like to pick parallel data from any of the source languages to the target language to improve translation of a particular LRL $S$, so we assume that $\mathcal{D}_{\text{dev}}$ exclusively consists of parallel data between $S$ and $T$.
-As a result, DDS will attempt to select data from $\mathcal{D}_{\text{train}}$ that improve accuracy on $S$-to-$T$ translation as represented by $\mathcal{D}_{\text{dev}}$.
+Thus, \dds~will attempt to select data from $\mathcal{D}_{\text{train}}$ that improve accuracy on $S$-to-$T$ translation as represented by $\mathcal{D}_{\text{dev}}$.
 % We then train a parameterized distribution $p(x, y;\psi)$ with a support over $\mathcal{D}_{\text{train}}$, such that selecting training data according to this distribution leads to the optimal NMT model $\theta^*$ on the language $S$. 
 %That is, $\psi$ satisfies the following condition
 %\begin{equation}
@@ -19,7 +19,7 @@ As a result, DDS will attempt to select data from $\mathcal{D}_{\text{train}}$ t
     %\vspace{-0.3cm}
     \vspace{-0.2cm}
 \begin{center}
-\resizebox{!}{3.3cm}{
+\resizebox{!}{3.5cm}{
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -32,7 +32,7 @@ As a result, DDS will attempt to select data from $\mathcal{D}_{\text{train}}$ t
 \Input{$\mathcal{D}_{\text{train}}$; K: number of data to train the NMT model before updating $\psi$; 
 E: number of updates for $\psi$; 
 $\alpha_1$,$\alpha_2$: discount factors for the gradient}
-
+%}
 \Output{The converged NMT model $\theta^*$}
 
   Initialize $\psi_0$, $\theta_0$
@@ -55,7 +55,13 @@ $\alpha_1$,$\alpha_2$: discount factors for the gradient}
         
       $grad[S_i] \leftarrow \alpha_1 \times \text{grad}[S_i] + \alpha_2 \times \nabla_{\theta_{t-1}} \ell(x_i, y; \theta_{t-1})$
     }
-  
+    %\Comment{Compute gradient for all languages}
+   %\For{ $i$ from $1$ to $n$}{
+        
+    %Sample $B$  data points $x_i, y_i$ from language $S_i$
+    
+      %$grad[S_i] \leftarrow  \nabla_{\theta} \ell(x_i, y; \theta)$
+    %}
     \Comment{Optimize $\psi$}
     \For{ iter in E}{
       
@@ -66,7 +72,7 @@ $\alpha_1$,$\alpha_2$: discount factors for the gradient}
       $\psi_t \leftarrow \text{GradientUpdate}(\psi_{t-1}, d_{\psi_{t-1}})$ 
     }
   }
-  \caption{\label{alg:nmt_dds}Training multilingual NMT with DDS.}
+  \caption{\label{alg:nmt_dds}Training multilingual NMT with \dds.}
 \end{algorithm}
 }
 \end{center}
@@ -75,11 +81,11 @@ $\alpha_1$,$\alpha_2$: discount factors for the gradient}
 
 To make training more efficient and stable in this setting, we make three simple modifications of the main framework in Section \ref{sec:diff_data_selection} that take advantage of the problem structure of multilingual NMT.
 First, instead of directly modeling $p(X,Y;\psi)$, we assume a uniform distribution over the target sentence $Y$, %($p(Y)$)
-and only parameterize the conditional distribution of which source language sentence to pick given the target sentence: $p(X|y;\psi)$. This design follows the formulation of Target Conditioned Sampling~(TCS~\citep{TCS}), an existing state-of-the-art data selection method with a similar structure, but models the distribution $p(X|y)$ using heuristics.
+and only parameterize the conditional distribution of which source language sentence to pick given the target sentence: $p(X|y;\psi)$. This design follows the formulation of Target Conditioned Sampling~(TCS;~\citet{TCS}), an existing state-of-the-art data selection method that uses a similar setting but models the distribution $p(X|y)$ using heuristics.
 Second, we only update $\psi$ after updating the NMT model for a fixed number of steps.
-Third, we sample the data according to $p(X|y;\psi)$ to get a Monte Carlo estimate of the objective in Equation \ref{eqn:psi_theta_argmin}.
-This can significantly reduce the training time compared to using all data.
-The pseudo code of the training process is in Algorithm \ref{alg:nmt_dds}.
+Third, we sample the data according to $p(X|y;\psi)$ to get a Monte Carlo estimate of the objective in Eqn.~\ref{eqn:psi_theta_argmin}.
+This significantly reduces the training time compared to using all data.
+The pseudo code of the training process is in Algorithm~\ref{alg:nmt_dds}.
 
 %Note that in Line \ref{alg:load_nmt} of Algorithm \ref{alg:nmt_dds}, we load $K$ training data according to $p(\psi)$. Since we formulate $p(\psi)$ as $p(S_i|y;\psi)$, the data loading procedure is the same as the TCS algorithm~\citep{TCS}: for each of the $K$ target sentences, we calculate a distribution over its source languages according to $p(S_i|y;\psi)$, and then sample the corresponding source sentences based on this distribution.
 

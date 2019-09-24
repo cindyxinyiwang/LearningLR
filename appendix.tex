@@ -1,7 +1,18 @@
 \section{\label{app} Appendix}
 
-\subsection{\label{app:grad_of_optimizers}Deriving $\nabla_\psi g$ for Different Optimizers}
+\subsection{\label{app:grad_of_optimizers}Deriving gradient of $\psi$ for Different Optimizers}
 %\gn{It seems reasonable to have this as a top-level section, so I changed it accordingly this has started to get into details that are probably better to separate from the overall high-level idea of DDS.}
+First, we rewrite the update rule of $\theta$ in  Eqn. \ref{eqn:theta_update} to incorporate the effect of its specific optimization algorithm.
+
+For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochastic gradient update. Specifically, at time step $t$, we update
+\begin{equation}
+  \label{eqn:theta_update_rule}
+   \small
+  \begin{aligned}
+    \theta_t \leftarrow \theta_{t-1} - g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big)
+  \end{aligned}
+\end{equation}
+where $g(\cdot)$ is any function that may be applied to the gradient $\nabla_\theta J(\theta_{t-1}, \psi)$. For instance, in standard gradient descent $g(\cdot)$ is simply a linear scaling of $\nabla_\theta J(\theta_{t-1}, \psi)$ by a learning rate $\eta_t$, while with the Adam optimizer~\citep{adam} $g$ also modifies the learning rate on a parameter-by-parameter basis.
 
 Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent~(SGD) update, then provide examples for two other common optimization algorithms, namely Momentum~\citep{nesterov} and Adam~\citep{adam}.
 %\gn{It's not clear to me why you skip standard SGD without momentum? It seems like it'd make the most sense to start there, even if that's not what you finally use in experiments. If you use it in experiments then you definitely need to discuss it. Then when you explain momentum you could just point out the differences.}
@@ -89,6 +100,7 @@ In this section, we give a detailed description of the hyperparameters used for 
     \item The dropout rate is set to 0.3.
     \item For the NMT model, we use Adam optimizer with learning rate of 0.001. For the distribution parameter $\psi$, we use Adam optimizer with learning rate of 0.0001.
     \item We train all models for 20 epochs without any learning rate decay.
+    \item We optimize both the NMT and \dds~models with Adam, using learning rates of 0.001 and 0.0001 for $\theta$ and $\psi$ respectively.
 \end{itemize}
 
 \subsection{\label{app:nmt_data} Dataset statistics for Multilingual NMT}
@@ -117,12 +129,14 @@ In this section, we provide some additional details for the image classification
 \begin{itemize}
   \item We use the cosine learning rate decay schedule~\citep{cosine_lr}, starting at $0.1$ for CIFAR-10 and $3.2$ for ImageNet, both with $2000$ warmup steps. 
   \item We maintain a moving average of all model parameters with the rate of $0.999$. Following~\citet{imagenet_generalize_better}, we treat the moving statistics of batch normalization~\citep{batch_norm} as \textit{untrained parameters} and also add them to the moving averages. 
+  \item  For ImageNet, we use the post-activation ResNet-50~\citep{res_net}. 
+The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 200K steps and 40K steps, respectively. 
 \end{itemize}
 
 %\subsection{\label{app:image_detail} Training details for image classification}
 %Our experiments were conducted on second-generation Tensor Processing Units (TPUv2). There were several important implementation details related to improving training efficiency with DDS for ImageNet models (these were not needed for the smaller CIFAR-10 training set). First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the DDS model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the DDS model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example.
 
-\subsection{Training Time}
-For NMT, the baseline TCS takes 10 hours, and DDS takes about 24 hours to finish. Our NMT code is not optimized and can potentially be made much more efficient. 
-For CIFAR-10, DDS take about $9$ hours, while experiments without DDS takes $5.5$ hours, and for ImageNet, these take $4$ hours and $6$ hours approximately. 
-
+%\subsection{Training Time}
+%For NMT, the baseline TCS takes 10 hours, and DDS takes about 24 hours to finish. Our NMT code is not optimized and can potentially be made much more efficient. 
+%For CIFAR-10, DDS take about $9$ hours, while experiments without DDS takes $5.5$ hours, and for ImageNet, these take $4$ hours and $6$ hours approximately. 
+%

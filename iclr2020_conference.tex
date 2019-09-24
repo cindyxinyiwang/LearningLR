@@ -1,17 +1,15 @@
-\documentclass{article}
 
-% if you need to pass options to natbib, use, e.g.:
-%     \PassOptionsToPackage{numbers, compress}{natbib}
-% before loading neurips_2019
-
-% ready for submission
-%\usepackage[nonatbib]{neurips_2019}
+\documentclass{article} % For LaTeX2e
 \usepackage{iclr2020_conference,times}
-% \usepackage{neurips_2019}
-% \usepackage[nonatbib,preprint]{neurips_2019}
-% \usepackage[nonatbib,final]{neurips_2019}
 
-\newcommand{\dds}{DDS}
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+
+\newcommand{\dds}{DAT}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
@@ -33,7 +31,7 @@
 
 
 
-\title{Optimizing Data Usage via \\ Differentiable Rewards}
+\title{Differentiable Adaptive Teaching for Effcient Data Usage Optimization}
 
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
@@ -74,7 +72,7 @@
   % \texttt{email} \\
 }
 
-\input{defs}
+%\input{defs}
 \begin{document}
 
 \maketitle
@@ -87,7 +85,7 @@
 \input{analysis.tex}
 \input{related_work.tex}
 \input{conclusion.tex}
-%\newpage
+\newpage
 
 \bibliography{main}
 \bibliographystyle{iclr2020_conference}
