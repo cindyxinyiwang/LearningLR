@@ -59,9 +59,9 @@ where $\eta$ is the learning rate for the scorer parameter $\psi$. The update ru
 \end{align}
 where $\alpha$ is the learning rate for the model. By alternating between Eqn.~\ref{eqn:theta_update} and Eqn.~\ref{eqn:psi_update}, we can iteratively update $\theta$ using the guidance from the scorer network, and update $\psi$ to optimize the scorer using feedback from the model.  
 
-Note our formulation of scorer network as $P(X, Y; \psi)$ has several additional advantages. First, it provides the flexibility that we can either sample a training instance directly using the scorer, or equivalently scale the update from the training instance based on its score. Second, it allows easy integration of prior knowledge of the data, which is further shown to be effective 
+Note our formulation of scorer network as $P(X, Y; \psi)$ has several additional advantages. First, it provides the flexibility that we can either sample a training instance directly using the scorer, or equivalently scale the update from the training instance based on its score. Specifically, we provide an algorithm under the \dds~framework for multilingual NMT~(see Sec. \ref{sec:nmt_method}), where the former is more efficient, and another more general algorithm for image classification~(see Sec. \ref{sec:image_method}), where the latter choice in more natural. Second, it allows easy integration of prior knowledge of the data, which is further shown to be effective in Sec. \ref{sec:experiment}. 
 
-\subse quitectictionon{\l \refabein Sel{sec:diff_data_selection}Deriving Rewards through Direct Differentiation}
+\subsection{\label{sec:diff_data_selection}Deriving Rewards through Direct Differentiation}
 In this section, we show that the update for the scorer network in Eqn.~\ref{eqn:psi_update} can be approximately derived as the solution of a bi-level optimization problem~\citep{bilevel_optim}, which has been applied to many different lines of research~\citep{hyper_grad,darts,learn_reweight}. 
 
 Under our framework, the scorer samples the data by $\langle x, y \rangle \sim P(X, Y; \psi)$, and $\psi$ will be chosen so that $\theta^*$ that optimizes $J(\theta, P(X, Y;\psi))$ will approximately minimize $J(\theta, P_\text{dev}(X,Y))$: 
@@ -82,7 +82,7 @@ The connection between $\psi$ and $\theta$ in Eqn. \ref{eqn:psi_theta_argmin} sh
    \small
   \begin{aligned}
     \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
-      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) &\text{(chain rule)} \\
+      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) \text{(chain rule)} \\
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - \nabla_\theta J(\theta_{t-1}, \psi) \right) &\text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update})} \\
       &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi  \left( \nabla_\theta J(\theta_{t-1}, \psi) \right) &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} \\
       &= \nabla_\psi \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
