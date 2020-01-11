@@ -89,22 +89,22 @@ More experiment details are noted in Appendix \ref{app:nmt_hparam}.
 \noindent \textbf{Baselines and Our Methods.}
 For both image classification and multi-lingual NMT, we compare the following data selection methods.
 \begin{itemize}
-\item \textbf{Uniform} where data is selected uniformly from all of the data that we have available, as is standard in training models. 
-\item \textbf{SPCL}~\citep{spcl}, a curriculum learning method that dynamically updates the curriculum to focus more on the ``easy'' training examples based on model loss.
-\item \textbf{\dds}, our proposed method.
+\item \textbf{Uniform}: data is selected uniformly from all of the data that we have available, as is standard in training models. 
+\item \textbf{SPCL}~\citep{spcl}: a curriculum learning method that dynamically updates the curriculum to focus more on the ``easy'' training examples based on model loss.
+\item \textbf{\dds}: our proposed method.
 \end{itemize}
 
 For image classification, we compare with several additional methods designed for filtering noisy data on CIFAR-10, where we simply consider the dev set as the clean data.
 \begin{itemize}
-\item \textbf{BatchWeight}~\citep{learn_reweight}, a method that scales example training loss in a batch with a locally optimized weight vector using a small set of clean data. 
-\item  \textbf{MentorNet}~\citep{mentornet}, a curriculum learning method that trains a mentor network to select clean data based on features from both the data and the main model. 
+\item \textbf{BatchWeight}~\citep{learn_reweight}: a method that scales example training loss in a batch with a locally optimized weight vector using a small set of clean data. 
+\item  \textbf{MentorNet}~\citep{mentornet}: a curriculum learning method that trains a mentor network to select clean data based on features from both the data and the main model. 
 \end{itemize}
 
 
 For machine translation, we also compare with two state-of-the-art heuristic methods for multi-lingual data selection.
 \begin{itemize}
-\item \textbf{Related} where data is selected uniformly from the target LRL and a linguistically related HRL \citep{rapid_adapt_nmt}. 
-\item  \textbf{TCS}, a recently proposed method of ``target conditioned sampling'', which uniformly chooses target sentences, then picks which source sentence to use based on heuristics such as word overlap \citep{TCS}.
+\item \textbf{Related}: data is selected uniformly from the target LRL and a linguistically related HRL \citep{rapid_adapt_nmt}. 
+\item  \textbf{TCS}: a recently proposed method of ``target conditioned sampling'', which uniformly chooses target sentences, then picks which source sentence to use based on heuristics such as word overlap \citep{TCS}.
 Note that both of these methods take advantage of structural properties of the multi-lingual NMT problem, and do not generalize to other problems such as classification.
 \end{itemize}
 
