@@ -81,7 +81,7 @@ $\alpha_1$,$\alpha_2$: discount factors for the gradient}
 
 To make training more efficient and stable in this setting, we make three simple modifications of the main framework in Section \ref{sec:diff_data_selection} that take advantage of the problem structure of multilingual NMT.
 First, instead of directly modeling $p(X,Y;\psi)$, we assume a uniform distribution over the target sentence $Y$, %($p(Y)$)
-and only parameterize the conditional distribution of which source language sentence to pick given the target sentence: $p(X|y;\psi)$. This design follows the formulation of Target Conditioned Sampling~(TCS;~\citet{TCS}), an existing state-of-the-art data selection method that uses a similar setting but models the distribution $p(X|y)$ using heuristics.
+and only parameterize the conditional distribution of which source language sentence to pick given the target sentence: $p(X|y;\psi)$. This design follows the formulation of Target Conditioned Sampling~(TCS;~\citet{TCS}), an existing state-of-the-art data selection method that uses a similar setting but models the distribution $p(X|y)$ using heuristics.  Since the scorer only needs to model a simple distribution over training languages, we use a fully connected 2-layer perceptron network.
 Second, we only update $\psi$ after updating the NMT model for a fixed number of steps.
 Third, we sample the data according to $p(X|y;\psi)$ to get a Monte Carlo estimate of the objective in Eqn.~\ref{eqn:psi_theta_argmin}.
 This significantly reduces the training time compared to using all data.

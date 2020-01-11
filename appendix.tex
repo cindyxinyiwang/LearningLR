@@ -14,8 +14,30 @@ For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochast
 \end{equation}
 where $g(\cdot)$ is any function that may be applied to the gradient $\nabla_\theta J(\theta_{t-1}, \psi)$. For instance, in standard gradient descent $g(\cdot)$ is simply a linear scaling of $\nabla_\theta J(\theta_{t-1}, \psi)$ by a learning rate $\eta_t$, while with the Adam optimizer~\citep{adam} $g$ also modifies the learning rate on a parameter-by-parameter basis.
 
+Due to the relationship between $\theta_t$ and $\psi$ as in Eqn~\ref{eqn:theta_update_rule}, $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. 
+By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows:
+\begin{equation}
+  \label{eqn:two_step_update}
+   \small
+  \begin{aligned}
+    \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
+      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) &\text{(chain rule)} \\
+      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - g\big( \nabla_\theta J(\theta_{t-1}) \big) \right) &\text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update_rule})} \\
+      &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}) \big) &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} %\paul{why? doesn't sound like this would be the case. More specifically either you have a reason to say $\partial \theta_{t-1} / \partial \psi = 0$(and not $\approx$) or you must justify this experimentally.})}
+  \end{aligned}
+\end{equation}
+Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent:
+\begin{equation}
+  \label{eqn:psi_update_rule}
+   \small
+  \begin{aligned}
+    \psi_{t+1} 
+      &\leftarrow \psi_t + \eta_\psi \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi_t) \big),
+  \end{aligned}
+\end{equation}
+
+
 Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent~(SGD) update, then provide examples for two other common optimization algorithms, namely Momentum~\citep{nesterov} and Adam~\citep{adam}.
-%\gn{It's not clear to me why you skip standard SGD without momentum? It seems like it'd make the most sense to start there, even if that's not what you finally use in experiments. If you use it in experiments then you definitely need to discuss it. Then when you explain momentum you could just point out the differences.}
 
 \paragraph{SGD Updates.} The SGD update rule for $\theta$ is as follows
 \begin{equation}
@@ -39,12 +61,12 @@ This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$
    \small
   \begin{aligned}
     &\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}, \psi) \big) \\
-    &= \eta_t \cdot \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
-    &= \eta_t \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\left( J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)} \right]
+    &= \eta_t \cdot \nabla_\psi \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
+    &= \eta_t \mathbb{E}_{x, y \sim p(X, Y; \psi)} \left[\left(\nabla J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{p(x, y; \psi)} \right]
   \end{aligned}
 \end{equation}
 %\gn{This last paragraph was too dense for me to follow: could you please try to explain a little more?}
-Here, the last equation follows from the log-derivative trick in the REINFORCE algorithm~\citep{reinforce}. 
+Here, the last equation follows from the log-derivative trick in the REINFORCE algorithm~\citep{reinforce}. We can consider the alignment of dev set and training data gradients as the reward for update $\psi$. In practice, we found that using cosine distance is more stable than simply taking dot product between the gradients. Thus in our implementation of the image classification and machine translation algorithms, we use $\text{cos}\left(J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right)$ as the reward signal.
 %and can be implemented by Monte Carlo approximation.
 %\gn{again, a little more detail here would be useful}. 
 %Note we do not do reinforcement learning in this paper. Instead \gn{this ``instead'' was also not clear to me.}, we simply utilize the same log-derivative trick to compute $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$. 
@@ -97,6 +119,8 @@ the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. He
 In this section, we give a detailed description of the hyperparameters used for the multilingual NMT experiments.
 \begin{itemize}
     \item We use a 1 layer LSTM with hidden size of 512 for both the encoder and decoder, and set the word embedding to size 128.
+    \item For multilingual NMT, we only use the scorer to model the distribution over languages. Therefore, we use a simple 2-layer perceptron network as the scorer architecture. Suppose the training data is from $n$ different languages. For each target sentence and its corresponding source sentences, the input feature is a $n$-dimensional vector of 0 and 1, where 1 indicates a source language exists for the given target sentence.
+    \item We simply use the dev set that comes with the dataset as $\mathcal{D}_\text{dev}$ to update the scorer.
     \item The dropout rate is set to 0.3.
     \item For the NMT model, we use Adam optimizer with learning rate of 0.001. For the distribution parameter $\psi$, we use Adam optimizer with learning rate of 0.0001.
     \item We train all models for 20 epochs without any learning rate decay.
@@ -128,6 +152,9 @@ In this section, we give a detailed description of the hyperparameters used for 
 In this section, we provide some additional details for the image classification task:
 \begin{itemize}
   \item We use the cosine learning rate decay schedule~\citep{cosine_lr}, starting at $0.1$ for CIFAR-10 and $3.2$ for ImageNet, both with $2000$ warmup steps. 
+  \item For image classification, we use an identical network architecture with the main model, but with independent weights and a regressor to predict the score instead of a classifier to predict image classes.
+  \item To construct the $\mathcal{D}_\text{dev}$ to update the scorer, we hold out about 10\% of the \textit{training} data. For example, in CIFAR-10 (4,000), $\mathcal{D}_\text{dev}$ is the last 400 images, while in ImageNet-10\%, since we use the first 102 TFRecord shards, $\mathcal{D}_\text{dev}$ consists of the last 10 shards. Here, “last” follows the order in which the data is posted on their website for CIFAR-10, and the order in which the TFRecord shards are processed for ImageNet. All data in $\mathcal{D}_\text{dev}$ are excluded from $\mathcal{D}_\text{train}$. Thus, for example, with CIFAR-10 (4,000), $|\mathcal{D}_\text{train}| = 3600$, ensuring that in total, we are only using the amount of data that we claim to use.
+
   \item We maintain a moving average of all model parameters with the rate of $0.999$. Following~\citet{imagenet_generalize_better}, we treat the moving statistics of batch normalization~\citep{batch_norm} as \textit{untrained parameters} and also add them to the moving averages. 
   \item  For ImageNet, we use the post-activation ResNet-50~\citep{res_net}. 
 The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 200K steps and 40K steps, respectively. 

@@ -20,8 +20,8 @@ Unfortunately, this distribution is unknown at training time, so instead we coll
 Since we need a sufficiently large training set $\mathcal{D}_\text{train}$ to train a good model, it is hard to ensure that $P_\text{train}(X, Y) \approx P_{\text{test}}(X, Y)$. In fact, we often accept that training data comes from a different distribution than test data.
 The discrepancy between $P_\text{train}(X, Y)$ and $P_\text{test}(X, Y)$ manifests itself in the form of problems such as overfitting~\citep{overfit_random_examples,dropout}, covariate shift~\citep{shimodaira2000improving}, and label shift~\citep{lipton2018detecting}.
 
-However, unlike the large training set, we can collect a relatively small development set $\mathcal{D}_\text{dev}= \{(x_i, y_i): i = 1, ..., N_\text{dev}\}$ with distribution $P_{\text{dev}}(X, Y)$ which is much closer to $P_{\text{test}}(X, Y)$.
-Since $\mathcal{D}_\text{dev}$ is a better approximation of our test-time scenario, we can use $\mathcal{D}_\text{dev}$ to get reliable feedback to learn to better utilize our training data from $\mathcal{D}_\text{train}$. In particular, we propose to train a \emph{scorer} network, parameterized by $\psi$, to provide guidance on training data usage to minimize $J(\theta, \mathcal{D}_\text{dev})$ .
+However, unlike the large training set, we can collect a relatively small development set $\mathcal{D}_\text{dev}= \{(x_i, y_i): i = 1, ..., N_\text{dev}\}$ with distribution $P_{\text{dev}}(X, Y)$ which is much closer to $P_{\text{test}}(X, Y)$\footnote{As is standard in machine learning experiments, we make sure that $\mathcal{D}_\text{dev}$ has no overlap with $\mathcal{D}_\text{train}$ or $\mathcal{D}_\text{test}$. Details of how we construct the $\mathcal{D}_\text{dev}$ can be found in Appendix \ref{app:nmt_hparam} and \ref{app:image_hparam}.}.
+Since $\mathcal{D}_\text{dev}$ is a better approximation of our test-time scenario\footnote{For example, in Section \ref{sec:nmt_method} we would like to use training data from many different languages to improve the performance of a particular low-resource language. Here we can gather a small set of $\mathcal{D}_\text{dev}$ from the low resource language, even if we can’t gather a large training set in the language. Moreover, in a domain adaptation setting we can obtain a small dev set in the target domain, or in a setting of training on noisy data we can often obtain a small clean dev set.}, we can use $\mathcal{D}_\text{dev}$ to get reliable feedback to learn to better utilize our training data from $\mathcal{D}_\text{train}$. In particular, we propose to train a \emph{scorer} network, parameterized by $\psi$, to provide guidance on training data usage to minimize $J(\theta, \mathcal{D}_\text{dev})$ .
 
 
 %\subsection{\label{sec:dds_motivation}Notation}
@@ -48,18 +48,23 @@ Although the above formulation is simpler and more general, it requires much mor
 \end{align}
 
 According to the REINFORCE algorithm~\citep{reinforce}, the update rule for $\psi$ is thus
-\begin{align}
-    \label{eqn:psi_update}
-    \psi_{t+1} \leftarrow  \psi_t + \eta \underbrace{\nabla_\theta \ell(x, y; \theta_{t-1}) \cdot \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})}_{\mathclap{R(x, y)}} \nabla_\psi \text{log}(P(X, Y;\psi))
-\end{align}
-where $\eta$ is the learning rate for the scorer parameter $\psi$. The update rule for the model is simply
+\begin{equation}
+\label{eqn:psi_update}
+\begin{aligned}
+    & \psi_{t+1} \leftarrow  \psi_t + \\
+    &  \underbrace{\nabla_\theta \ell(x, y; \theta_{t-1}) \cdot \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})}_{\mathclap{R(x, y)}} \nabla_\psi \text{log}(P(X, Y;\psi))
+\end{aligned}
+\end{equation}
+%where $\eta$ is the learning rate for the scorer parameter $\psi$. 
+The update rule for the model is simply
 \begin{align}
     \label{eqn:theta_update}
-    \theta_t \leftarrow \theta_{t-1} + \alpha \nabla_\theta J(\theta_{t-1}, P(X, Y;\psi))
+    \theta_t \leftarrow \theta_{t-1} - \nabla_\theta J(\theta_{t-1}, P(X, Y;\psi))
 \end{align}
-where $\alpha$ is the learning rate for the model. By alternating between Eqn.~\ref{eqn:theta_update} and Eqn.~\ref{eqn:psi_update}, we can iteratively update $\theta$ using the guidance from the scorer network, and update $\psi$ to optimize the scorer using feedback from the model.  
+%where $\alpha$ is the learning rate for the model. 
+For simplicity of notation, we omit the learning rate term. Full derivation can be found in Appendix \ref{app:grad_of_optimizers}. By alternating between Eqn.~\ref{eqn:theta_update} and Eqn.~\ref{eqn:psi_update}, we can iteratively update $\theta$ using the guidance from the scorer network, and update $\psi$ to optimize the scorer using feedback from the model.  
 
-Note our formulation of scorer network as $P(X, Y; \psi)$ has several additional advantages. First, it provides the flexibility that we can either sample a training instance directly using the scorer, or equivalently scale the update from the training instance based on its score. Specifically, we provide an algorithm under the \dds~framework for multilingual NMT~(see Sec. \ref{sec:nmt_method}), where the former is more efficient, and another more general algorithm for image classification~(see Sec. \ref{sec:image_method}), where the latter choice in more natural. Second, it allows easy integration of prior knowledge of the data, which is further shown to be effective in Sec. \ref{sec:experiment}. 
+Our formulation of scorer network as $P(X, Y; \psi)$ has several advantages. First, it provides the flexibility that we can either sample a training instance or equivalently scale the update from the training instance based on its score. Specifically, we provide an algorithm under the \dds~framework for multilingual NMT~(see Sec. \ref{sec:nmt_method}), where the former is more efficient, and another more general algorithm for image classification~(see Sec. \ref{sec:image_method}), where the latter choice is natural. Second, it allows easy integration of prior knowledge of the data, which is shown to be effective in Sec. \ref{sec:experiment}. 
 
 \subsection{\label{sec:diff_data_selection}Deriving Rewards through Direct Differentiation}
 In this section, we show that the update for the scorer network in Eqn.~\ref{eqn:psi_update} can be approximately derived as the solution of a bi-level optimization problem~\citep{bilevel_optim}, which has been applied to many different lines of research~\citep{hyper_grad,darts,learn_reweight}. 
@@ -76,17 +81,18 @@ Under our framework, the scorer samples the data by $\langle x, y \rangle \sim P
   \end{aligned}
 \end{equation}
 
-The connection between $\psi$ and $\theta$ in Eqn. \ref{eqn:psi_theta_argmin} shows that $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. Now we can approximately compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows \gn{The labels of the following equation are outside of the right margin. Try to fix this (I tried using negative ``hspace'' but unfortunately that  didn't work.)}:
+The connection between $\psi$ and $\theta$ in Eqn. \ref{eqn:psi_theta_argmin} shows that $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. Now we can approximately compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows:
+%\gn{The labels of the following equation are outside of the right margin. Try to fix this (I tried using negative ``hspace'' but unfortunately that  didn't work.)}:
 \begin{equation}
   \label{eqn:two_step_update}
    \small
   \begin{aligned}
-    \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
-      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) \text{(chain rule)} \\
-      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - \nabla_\theta J(\theta_{t-1}, \psi) \right) &\text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update})} \\
-      &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi  \left( \nabla_\theta J(\theta_{t-1}, \psi) \right) &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} \\
-      &= \nabla_\psi \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
-    &= \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\left( \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{P(x, y; \psi)} \right]
+   & \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})\\
+    &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) ~~\quad\quad\quad\quad\quad\quad\quad\quad \text{(chain rule)} \\
+      &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - \nabla_\theta J(\theta_{t-1}, \psi) \right) \quad \text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update})} \\
+      &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi  \left( \nabla_\theta J(\theta_{t-1}, \psi) \right) ~~\quad\quad\quad \text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} \\
+      &= -\nabla_\psi \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
+    &= -\mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\left( \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \cdot \nabla_\psi \log{P(x, y; \psi)} \right]
   \end{aligned}
 \end{equation}
 Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn.~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent, which is exactly the same as the RL update rule in Eqn.~\ref{eqn:psi_update}.

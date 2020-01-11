@@ -42,15 +42,22 @@
 % lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
 % authors names on the first line, and the last on the second line, try using
 % \AND instead of \And before the third author name.
+\usepackage{authblk}
 
-\author{%
-  David S.~Hippocampus\thanks{Use footnote for providing further information
-    about author (webpage, alternative address)---\emph{not} for acknowledging
-    funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
+\iclrfinalcopy
+
+\author[*,1]{\textbf{Xinyi Wang}}
+\author[*,1,2]{\textbf{Hieu Pham}}
+\author[1]{\textbf{Paul Michel}}
+\author[1]{\textbf{Antonios Anastasopoulos}}
+\author[1]{\textbf{Graham Neubig}}
+\author[1]{\textbf{Jaime Carbonell}}
+\affil[1]{Language Technology Institute, Carnegie Mellon University, Pittsburgh, PA 15213, USA}
+\affil[2]{Google Brain, Mountain View, CA 94043, USA}
+%\affil[3]{Monash University, Clayton VIC 3800, Australia}
+\affil[ ]{\texttt{\{xinyiw1,hyhieu,pmichel1,aanastas,gneubig,jgc\}@cs.cmu.edu}}
+
+%\author{%
   % examples of more authors
   % \And
   % Coauthor \\
@@ -72,12 +79,15 @@
   % Affiliation \\
   % Address \\
   % \texttt{email} \\
-}
+%}
 
 \input{defs}
 \begin{document}
 
 \maketitle
+{\let\thefootnote\relax\footnote{{*: Equal contributions.}}}
+
+\setcounter{footnote}{0}
 
 \input{abstract_iclr.tex}
 \input{introduction_iclr.tex}
