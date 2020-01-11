@@ -1,9 +1,11 @@
 \subsection{\label{sec:image_method}Formulation for Classification}
 
+Algorithm~\ref{alg:image_classification_dds} presents the pseudo code for the training process on classification tasks, using the notations introduced in Section~\ref{sec:method}. 
+
 %\begin{wraptable}{l}{8cm}
     %\vspace{-0.2cm}
-\begin{center}
-\resizebox{!}{3.cm}{
+%\begin{center}
+\resizebox{!}{0.5\columnwidth}{
 \begin{algorithm}[H]
 \SetAlgoLined
 \DontPrintSemicolon
@@ -37,21 +39,22 @@
   \caption{\label{alg:image_classification_dds}Training a classification model with \dds.}
 \end{algorithm}
 }
-\end{center}
-    \vspace{-0.2cm}
-
+%\end{center}
 %\end{wraptable}
-Algorithm~\ref{alg:image_classification_dds} presents the pseudo code for the training process on classification tasks, using the notations introduced in Section~\ref{sec:method}. 
-The main  classification model is parameterized by $\theta$. The scorer $p(X, Y; \psi)$ is an identical network with the main model, but with independent weights, \ie~$p(X, Y; \psi)$ does not share weights with $\theta$. For each example $x_i$ in a minibatch uniformly sampled from $\mathcal{D}_\text{train}$, this \dds~model outputs a scalar from the data $x_i$. All scalars are passed through a softmax function to compute the relative probabilities of the examples in the minibatch, and their gradients are scaled accordingly when applied to $\theta$. Note that our actual formulation of $p(X, Y; \psi)$ does \textit{not} depend on $Y$, but we keep $Y$ in the notation for consistency with the formulation of the \dds~framework. Note that we have two gradient update steps, one for the model parameter $\theta_t$ in Line~\ref{alg:grad_update_model} and the other for the \dds~scorer parameter $\psi$ in Line~\ref{alg:grad_update_p}. For the model parameter update, we can simply use any of the standard optimization update rule. For the scorer $\psi$, we use the update rule derived in Section \ref{sec:diff_data_selection}.
 
-\paragraph{Per-Example Gradient.} As seen from Line~\ref{alg:require_per_example_grad} of Algorithm~\ref{alg:image_classification_dds}, as well as from Eqn.~\ref{eqn:momentum_update_for_psi}, \dds~requires us to compute $\nabla_\theta \ell(x_i, y_i; \theta_{t-1})$, \ie~the gradient for each example in a batch of training data. This operation is very slow and memory intensive, especially when the batch size is large, \eg~our experiments on ImageNet use a batch size of $4096$ (see~Section~\ref{sec:experiment}). Therefore, we propose an efficient approximation of this per-example gradient computation via the first-order Taylor expansion of $\ell(x_i, y_i; \theta_{t-1})$. In particular, for any vector $v \in \mathbb{R}^{\ABS{\theta}}$, with sufficiently small $\epsilon > 0$, we have:
-    \vspace{-0.15cm}
+The main  classification model is parameterized by $\theta$. The scorer $p(X, Y; \psi)$ is an identical network with the main model, but with independent weights, \ie~$p(X, Y; \psi)$ does not share weights with $\theta$. For each example $x_i$ in a minibatch uniformly sampled from $\mathcal{D}_\text{train}$, this \dds~model outputs a scalar from the data $x_i$. All scalars are passed through a softmax function to compute the relative probabilities of the examples in the minibatch, and their gradients are scaled accordingly when applied to $\theta$. 
+
+Note that our actual formulation of $p(X, Y; \psi)$ does \textit{not} depend on $Y$, but we keep $Y$ in the notation for consistency with the formulation of the \dds~framework. We have two gradient update steps, one for the model parameter $\theta_t$ in Line~\ref{alg:grad_update_model} and the other for the \dds~scorer parameter $\psi$ in Line~\ref{alg:grad_update_p}. For the model parameter update, we can simply use any of the standard optimization update rule. For the scorer $\psi$, we use the update rule derived in Section \ref{sec:diff_data_selection}.
+
+\paragraph{Per-Example Gradient.} As seen from Line~\ref{alg:require_per_example_grad} of Algorithm~\ref{alg:image_classification_dds}, as well as from Eqn.~\ref{eqn:momentum_update_for_psi}, \dds~requires us to compute $\nabla_\theta \ell(x_i, y_i; \theta_{t-1})$, \ie~the gradient for each example in a batch of training data. In practice, a single gradient is computed with respect to a mini-batch of training data of size $n$ to improve computational efficiency. However, using the per-example gradient requires one to compute the gradient for each example in a batch, which essentially slows down training by a factor of $n$. Therefore, this operation can be very slow and memory intensive, especially when the batch size is large, \eg~our experiments on ImageNet use a batch size of $4096$ (see~Section~\ref{sec:experiment}).  
+
+We propose an efficient approximation of this per-example gradient computation via the first-order Taylor expansion of $\ell(x_i, y_i; \theta_{t-1})$. In particular, for any vector $v \in \mathbb{R}^{\ABS{\theta}}$, with sufficiently small $\epsilon > 0$, we have:
+
 \begin{equation}
   \label{eqn:taylor_dot_product}
-  \small
   \begin{aligned}
-    v^\top \cdot \nabla_\theta \ell(x_i, y_i; \theta_{t-1})
-    \approx
+    & v^\top \cdot \nabla_\theta \ell(x_i, y_i; \theta_{t-1}) \\
+    & \approx
     \frac{1}{\epsilon}
     \left(
       \ell\big( x_i, y_i; \theta_{t-1} + \epsilon v \big) -

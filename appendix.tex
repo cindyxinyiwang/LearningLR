@@ -17,7 +17,7 @@ where $g(\cdot)$ is any function that may be applied to the gradient $\nabla_\th
 Due to the relationship between $\theta_t$ and $\psi$ as in Eqn~\ref{eqn:theta_update_rule}, $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. 
 By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows:
 \begin{equation}
-  \label{eqn:two_step_update}
+  \label{eqn:two_step_update_general}
    \small
   \begin{aligned}
     \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
@@ -26,7 +26,7 @@ By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal
       &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}) \big) &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} %\paul{why? doesn't sound like this would be the case. More specifically either you have a reason to say $\partial \theta_{t-1} / \partial \psi = 0$(and not $\approx$) or you must justify this experimentally.})}
   \end{aligned}
 \end{equation}
-Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update} leads to a rule to update $\psi$ using gradient descent:
+Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update_general} leads to a rule to update $\psi$ using gradient descent:
 \begin{equation}
   \label{eqn:psi_update_rule}
    \small

@@ -1,0 +1,368 @@
+\begin{thebibliography}{62}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Anandalingam \& Friesz(1992)Anandalingam and Friesz]{hier_optim}
+Anandalingam, G. and Friesz, T.~L.
+\newblock Hierarchical optimization: An introduction.
+\newblock \emph{Annals {OR}}, 1992.
+
+\bibitem[Axelrod et~al.(2011)Axelrod, He, and Gao]{axelrod2011domain}
+Axelrod, A., He, X., and Gao, J.
+\newblock Domain adaptation via pseudo in-domain data selection.
+\newblock In \emph{EMNLP}, 2011.
+
+\bibitem[Bahdanau et~al.(2015)Bahdanau, Cho, and Bengio]{attention}
+Bahdanau, D., Cho, K., and Bengio, Y.
+\newblock Neural machine translation by jointly learning to align and
+  translate.
+\newblock In \emph{ICLR}, 2015.
+
+\bibitem[Baydin et~al.(2018)Baydin, Cornish, Mart{\'{\i}}nez{-}Rubio, Schmidt,
+  and Wood]{hyper_grad}
+Baydin, A.~G., Cornish, R., Mart{\'{\i}}nez{-}Rubio, D., Schmidt, M., and Wood,
+  F.
+\newblock Online learning rate adaptation with hypergradient descent.
+\newblock In \emph{ICLR}, 2018.
+
+\bibitem[Bengio et~al.(2009)Bengio, Louradour, Collobert, and
+  Weston]{cl_bengio}
+Bengio, Y., Louradour, J., Collobert, R., and Weston, J.
+\newblock Curriculum learning.
+\newblock In \emph{ICML}, 2009.
+
+\bibitem[Clark et~al.(2011)Clark, Dyer, Lavie, and Smith]{significance_nmt}
+Clark, J.~H., Dyer, C., Lavie, A., and Smith, N.~A.
+\newblock Better hypothesis testing for statistical machine translation:
+  Controlling for optimizer instability.
+\newblock In \emph{ACL}, 2011.
+
+\bibitem[Colson et~al.(2007)Colson, Marcotte, and Savard]{bilevel_optim}
+Colson, B., Marcotte, P., and Savard, G.
+\newblock An overview of bilevel optimization.
+\newblock \emph{Annals {OR}}, 153\penalty0 (1), 2007.
+
+\bibitem[Du et~al.(2018)Du, Czarnecki, Jayakumar, Pascanu, and
+  Lakshminarayanan]{cos_sim}
+Du, Y., Czarnecki, W.~M., Jayakumar, S.~M., Pascanu, R., and Lakshminarayanan,
+  B.
+\newblock Adapting auxiliary losses using gradient similarity.
+\newblock \emph{CoRR}, abs/1812.02224, 2018.
+\newblock URL \url{http://arxiv.org/abs/1812.02224}.
+
+\bibitem[Fan et~al.(2018)Fan, Tian, Qin, Li, and Liu]{learn_to_teach}
+Fan, Y., Tian, F., Qin, T., Li, X., and Liu, T.
+\newblock Learning to teach.
+\newblock In \emph{ICLR}, 2018.
+
+\bibitem[Fang et~al.(2017)Fang, Li, and Cohn]{learn_active_learn}
+Fang, M., Li, Y., and Cohn, T.
+\newblock Learning how to active learn: {A} deep reinforcement learning
+  approach.
+\newblock In \emph{EMNLP}, pp.\  595--605, 2017.
+
+\bibitem[Finn et~al.(2017)Finn, Abbeel, and Levine]{finn2017model}
+Finn, C., Abbeel, P., and Levine, S.
+\newblock Model-agnostic meta-learning for fast adaptation of deep networks.
+\newblock In \emph{ICML}, 2017.
+
+\bibitem[Foster et~al.(2010)Foster, Goutte, and
+  Kuhn]{foster-etal-2010-discriminative}
+Foster, G., Goutte, C., and Kuhn, R.
+\newblock Discriminative instance weighting for domain adaptation in
+  statistical machine translation.
+\newblock In \emph{EMNLP}, 2010.
+
+\bibitem[Graves et~al.(2017)Graves, Bellemare, Menick, Munos, and
+  Kavukcuoglu]{automate_cl_GravesBMMK17}
+Graves, A., Bellemare, M.~G., Menick, J., Munos, R., and Kavukcuoglu, K.
+\newblock Automated curriculum learning for neural networks.
+\newblock In \emph{ICML}, 2017.
+
+\bibitem[Gr{\'e}zl et~al.(2007)Gr{\'e}zl, Karafi{\'a}t, Kont{\'a}r, and
+  Cernocky]{grezl2007probabilistic}
+Gr{\'e}zl, F., Karafi{\'a}t, M., Kont{\'a}r, S., and Cernocky, J.
+\newblock Probabilistic and bottle-neck features for lvcsr of meetings.
+\newblock In \emph{ICASSP}, volume~4, pp.\  IV--757. IEEE, 2007.
+
+\bibitem[He et~al.(2016)He, Zhang, Ren, and Sun]{res_net}
+He, K., Zhang, X., Ren, S., and Sun, J.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{CPVR}, 2016.
+
+\bibitem[Ioffe \& Szegedy(2015)Ioffe and Szegedy]{batch_norm}
+Ioffe, S. and Szegedy, C.
+\newblock Batch normalization: Accelerating deep network training by reducing
+  internal covariate shift.
+\newblock In \emph{ICML}, 2015.
+
+\bibitem[Jiang \& Zhai(2007)Jiang and Zhai]{jiang-zhai-2007-instance}
+Jiang, J. and Zhai, C.
+\newblock Instance weighting for domain adaptation in nlp.
+\newblock In \emph{ACL}, 2007.
+
+\bibitem[Jiang et~al.(2015)Jiang, Meng, Zhao, Shan, and Hauptmann]{spcl}
+Jiang, L., Meng, D., Zhao, Q., Shan, S., and Hauptmann, A.~G.
+\newblock Self-paced curriculum learning.
+\newblock In \emph{AAAI}, 2015.
+
+\bibitem[Jiang et~al.(2018)Jiang, Zhou, Leung, Li, and Fei{-}Fei]{mentornet}
+Jiang, L., Zhou, Z., Leung, T., Li, L., and Fei{-}Fei, L.
+\newblock Mentornet: Learning data-driven curriculum for very deep neural
+  networks on corrupted labels.
+\newblock In \emph{ICML}, 2018.
+
+\bibitem[Kingma \& Ba(2015)Kingma and Ba]{adam}
+Kingma, D.~P. and Ba, J.~L.
+\newblock Adam: A method for stochastic optimization.
+\newblock In \emph{ICLR}, 2015.
+
+\bibitem[Kirchhoff \& Bilmes(2014)Kirchhoff and Bilmes]{submodular_mt}
+Kirchhoff, K. and Bilmes, J.~A.
+\newblock Submodularity for data selection in machine translation.
+\newblock In \emph{EMNLP}, 2014.
+
+\bibitem[Kornblith et~al.(2019)Kornblith, Shlens, and
+  Le]{imagenet_generalize_better}
+Kornblith, S., Shlens, J., and Le, Q.~V.
+\newblock Do better imagenet models transfer better?
+\newblock In \emph{CVPR}, 2019.
+
+\bibitem[Krizhevsky(2009)]{cifar10}
+Krizhevsky, A.
+\newblock Learning multiple layers of features from tiny images.
+\newblock Technical report, 2009.
+
+\bibitem[Kumar et~al.(2019)Kumar, Foster, Cherry, and Krikun]{rl_nmt}
+Kumar, G., Foster, G., Cherry, C., and Krikun, M.
+\newblock Reinforcement learning based curriculum optimization for neural
+  machine translation.
+\newblock In \emph{NAACL}, pp.\  2054--2061, 2019.
+
+\bibitem[Kumar et~al.(2010)Kumar, Packer, and Koller]{spl_kumar}
+Kumar, M.~P., Packer, B., and Koller, D.
+\newblock Self-paced learning for latent variable models.
+\newblock In \emph{NIPS}, 2010.
+
+\bibitem[Lee \& Grauman(2011)Lee and Grauman]{spl_visual_category}
+Lee, Y.~J. and Grauman, K.
+\newblock Learning the easy things first: Self-paced visual category discovery.
+\newblock In \emph{CVPR}, 2011.
+
+\bibitem[Lipton et~al.(2018)Lipton, Wang, and Smola]{lipton2018detecting}
+Lipton, Z.~C., Wang, Y.-X., and Smola, A.
+\newblock Detecting and correcting for label shift with black box predictors.
+\newblock \emph{arXiv preprint arXiv:1802.03916}, 2018.
+
+\bibitem[Liu et~al.(2019{\natexlab{a}})Liu, Simonyan, and Yang]{darts}
+Liu, H., Simonyan, K., and Yang, Y.
+\newblock {DARTS:} differentiable architecture search.
+\newblock 2019{\natexlab{a}}.
+
+\bibitem[Liu et~al.(2019{\natexlab{b}})Liu, Davison, and Johns]{meta_aux_learn}
+Liu, S., Davison, A.~J., and Johns, E.
+\newblock Self-supervised generalisation with meta auxiliary learning.
+\newblock \emph{CoRR}, abs/1901.08933, 2019{\natexlab{b}}.
+\newblock URL \url{http://arxiv.org/abs/1901.08933}.
+
+\bibitem[Loshchilov \& Hutter(2017)Loshchilov and Hutter]{cosine_lr}
+Loshchilov, I. and Hutter, F.
+\newblock Sgdr: Stochastic gradient descent with warm restarts.
+\newblock In \emph{ICLR}, 2017.
+
+\bibitem[Moore \& Lewis(2010)Moore and Lewis]{moore2010intelligent}
+Moore, R.~C. and Lewis, W.
+\newblock Intelligent selection of language model training data.
+\newblock In \emph{ACL}, 2010.
+
+\bibitem[Nesterov(1983)]{nesterov}
+Nesterov, Y.~E.
+\newblock A method for solving the convex programming problem with convergence
+  rate $o(1/k^2)$.
+\newblock \emph{Soviet Mathematics Doklady}, 1983.
+
+\bibitem[Neubig \& Hu(2018)Neubig and Hu]{rapid_adapt_nmt}
+Neubig, G. and Hu, J.
+\newblock Rapid adaptation of neural machine translation to new languages.
+\newblock \emph{EMNLP}, 2018.
+
+\bibitem[Ngiam et~al.(2018)Ngiam, Peng, Vasudevan, Kornblith, Le, and
+  Pang]{domain_adapt_transfer}
+Ngiam, J., Peng, D., Vasudevan, V., Kornblith, S., Le, Q.~V., and Pang, R.
+\newblock Domain adaptive transfer learning with specialist models.
+\newblock \emph{CVPR}, 2018.
+
+\bibitem[Papineni et~al.(2002)Papineni, Roukos, Ward, and Zhu]{bleu}
+Papineni, K., Roukos, S., Ward, T., and Zhu, W.
+\newblock Bleu: a method for automatic evaluation of machine translation.
+\newblock In \emph{ACL}, 2002.
+
+\bibitem[Pham et~al.(2018)Pham, Crego, Senellart, and
+  Yvon]{pham-etal-2018-fixing}
+Pham, M.~Q., Crego, J., Senellart, J., and Yvon, F.
+\newblock Fixing translation divergences in parallel corpora for neural {MT}.
+\newblock In \emph{EMNLP}, 2018.
+
+\bibitem[Platanios et~al.(2019)Platanios, Stretcu, Neubig, Poczos, and
+  Mitchell]{platanios19naacl}
+Platanios, E.~A., Stretcu, O., Neubig, G., Poczos, B., and Mitchell, T.
+\newblock Competence-based curriculum learning for neural machine translation.
+\newblock In \emph{NAACL}, 2019.
+
+\bibitem[Qi et~al.(2018)Qi, Sachan, Felix, Padmanabhan, and
+  Neubig]{ted_pretrain_emb}
+Qi, Y., Sachan, D.~S., Felix, M., Padmanabhan, S., and Neubig, G.
+\newblock When and why are pre-trained word embeddings useful for neural
+  machine translation?
+\newblock \emph{NAACL}, 2018.
+
+\bibitem[Ren et~al.(2018)Ren, Zeng, Yang, and Urtasun]{learn_reweight}
+Ren, M., Zeng, W., Yang, B., and Urtasun, R.
+\newblock Learning to reweight examples for robust deep learning.
+\newblock In \emph{ICML}, pp.\  4331--4340, 2018.
+
+\bibitem[Russakovsky et~al.(2015)Russakovsky, Deng, Su, Krause, Satheesh, Ma,
+  Huang, Karpathy, Khosla, Bernstein, Berg, and Fei-Fei]{imagenet}
+Russakovsky, O., Deng, J., Su, H., Krause, J., Satheesh, S., Ma, S., Huang, Z.,
+  Karpathy, A., Khosla, A., Bernstein, M., Berg, A.~C., and Fei-Fei, L.
+\newblock {ImageNet Large Scale Visual Recognition Challenge}.
+\newblock \emph{IJCV}, 2015.
+
+\bibitem[Sennrich \& Zhang(2019)Sennrich and Zhang]{lownmt19}
+Sennrich, R. and Zhang, B.
+\newblock Revisiting low-resource neural machine translation: A case study.
+\newblock In \emph{ACL}, 2019.
+
+\bibitem[Shimodaira(2000)]{shimodaira2000improving}
+Shimodaira, H.
+\newblock Improving predictive inference under covariate shift by weighting the
+  log-likelihood function.
+\newblock \emph{Journal of statistical planning and inference}, 90\penalty0
+  (2):\penalty0 227--244, 2000.
+
+\bibitem[Sivasankaran et~al.(2017)Sivasankaran, Vincent, and
+  Illina.]{importance_weight}
+Sivasankaran, S., Vincent, E., and Illina., I.
+\newblock Discriminative importance weighting of augmented training data for
+  acoustic model training.
+\newblock In \emph{ICASSP}, 2017.
+
+\bibitem[Spitkovsky et~al.(2010)Spitkovsky, Alshawi, and
+  Jurafsky]{SpitkovskyAJ10}
+Spitkovsky, V.~I., Alshawi, H., and Jurafsky, D.
+\newblock From baby steps to leapfrog: How "less is more" in unsupervised
+  dependency parsing.
+\newblock In \emph{NAACL}, 2010.
+
+\bibitem[Srivastava et~al.(2014)Srivastava, Hinton, Krizhevsky, Sutskever, and
+  Salakhutdinov]{dropout}
+Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov,
+  R.
+\newblock Dropout: A simple way to prevent neural networks from overfitting.
+\newblock In \emph{JMLR}, 2014.
+
+\bibitem[Tschiatschek et~al.(2014)Tschiatschek, Iyer, Wei, and
+  Bilmes]{learn_mix_submodular}
+Tschiatschek, S., Iyer, R.~K., Wei, H., and Bilmes, J.~A.
+\newblock Learning mixtures of submodular functions for image collection
+  summarization.
+\newblock In \emph{NIPS}, 2014.
+
+\bibitem[Tsvetkov et~al.(2016)Tsvetkov, Faruqui, Ling, MacWhinney, and
+  Dyer]{baysian_curriculum}
+Tsvetkov, Y., Faruqui, M., Ling, W., MacWhinney, B., and Dyer, C.
+\newblock Learning the curriculum with bayesian optimization for task-specific
+  word representation learning.
+\newblock In \emph{ACL}, 2016.
+
+\bibitem[van~der Wees et~al.(2017)van~der Wees, Bisazza, and
+  Monz]{dynamic_data_selection_nmt}
+van~der Wees, M., Bisazza, A., and Monz, C.
+\newblock Dynamic data selection for neural machine translation.
+\newblock In \emph{EMNLP}, 2017.
+
+\bibitem[Vaswani et~al.(2017)Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez,
+  Kaiser, and Polosukhin]{vaswani2017attention}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.~N.,
+  Kaiser, {\L}., and Polosukhin, I.
+\newblock Attention is all you need.
+\newblock In \emph{NIPS}, pp.\  5998--6008, 2017.
+
+\bibitem[Vyas et~al.(2018)Vyas, Niu, and Carpuat]{vyas-etal-2018-identifying}
+Vyas, Y., Niu, X., and Carpuat, M.
+\newblock Identifying semantic divergences in parallel text without
+  annotations.
+\newblock In \emph{NAACL}, 2018.
+
+\bibitem[Wang et~al.()Wang, Utiyama, Liu, Chen, and
+  Sumita]{wang-etal-2017-instance}
+Wang, R., Utiyama, M., Liu, L., Chen, K., and Sumita, E.
+\newblock Instance weighting for neural machine translation domain adaptation.
+\newblock In \emph{EMNLP}.
+
+\bibitem[Wang et~al.(2019{\natexlab{a}})Wang, Caswell, and Chelba]{dynamic}
+Wang, W., Caswell, I., and Chelba, C.
+\newblock Dynamically composing domain-data selection with clean-data selection
+  by "co-curricular learning" for neural machine translation.
+\newblock In \emph{ACL}, 2019{\natexlab{a}}.
+
+\bibitem[Wang \& Neubig(2019)Wang and Neubig]{TCS}
+Wang, X. and Neubig, G.
+\newblock Target conditioned sampling: Optimizing data selection for
+  multilingual neural machine translation.
+\newblock In \emph{ACL}, 2019.
+
+\bibitem[Wang et~al.(2019{\natexlab{b}})Wang, Pham, Arthur, and Neubig]{sde}
+Wang, X., Pham, H., Arthur, P., and Neubig, G.
+\newblock Multilingual neural machine translation with soft decoupled encoding.
+\newblock In \emph{ICLR}, 2019{\natexlab{b}}.
+
+\bibitem[Williams(1992)]{reinforce}
+Williams, R.~J.
+\newblock Simple statistical gradient-following algorithms for connectionist
+  reinforcement learning.
+\newblock \emph{Machine Learning}, 1992.
+
+\bibitem[Wu et~al.(2018)Wu, Li, and Wang]{reinforce_cotrain}
+Wu, J., Li, L., and Wang, W.~Y.
+\newblock Reinforced co-training.
+\newblock In \emph{NAACL}, 2018.
+
+\bibitem[Xie et~al.(2017)Xie, Girshick, Doll{\'a}r, Tu, and He]{resnext}
+Xie, S., Girshick, R., Doll{\'a}r, P., Tu, Z., and He, K.
+\newblock Aggregated residual transformations for deep neural networks.
+\newblock In \emph{CVPR}, 2017.
+
+\bibitem[Zagoruyko \& Komodakis(2016)Zagoruyko and Komodakis]{wide_res_net}
+Zagoruyko, S. and Komodakis, N.
+\newblock Wide residual networks.
+\newblock In \emph{BMVC}, 2016.
+
+\bibitem[Zhang et~al.(2017)Zhang, Bengio, Hardt, Recht, and
+  Vinyals]{overfit_random_examples}
+Zhang, C., Bengio, S., Hardt, M., Recht, B., and Vinyals, O.
+\newblock Understanding deep learning requires rethinking generalization.
+\newblock In \emph{ICLR}, 2017.
+
+\bibitem[Zhang et~al.(2016)Zhang, Kim, Crego, and Senellart]{zhang2016boosting}
+Zhang, D., Kim, J., Crego, J., and Senellart, J.
+\newblock Boosting neural machine translation.
+\newblock \emph{Arxiv 1612.06138}, 2016.
+
+\bibitem[Zhang et~al.(2018)Zhang, Kumar, Khayrallah, Murray, Gwinnup,
+  Martindale, McNamee, Duh, and Carpuat]{zhang2018empirical}
+Zhang, X., Kumar, G., Khayrallah, H., Murray, K., Gwinnup, J., Martindale,
+  M.~J., McNamee, P., Duh, K., and Carpuat, M.
+\newblock An empirical exploration of curriculum learning for neural machine
+  translation.
+\newblock \emph{Arxiv, 1811.00739}, 2018.
+
+\bibitem[Zoph et~al.(2016)Zoph, Yuret, May, and Knight]{nmt_transfer}
+Zoph, B., Yuret, D., May, J., and Knight, K.
+\newblock Transfer learning for low-resource neural machine translation.
+\newblock In \emph{EMNLP}, 2016.
+
+\end{thebibliography}
