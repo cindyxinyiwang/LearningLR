@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  11 JAN 2020 17:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  11 JAN 2020 22:17
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -746,6 +746,10 @@ l.49 ...pecially when the batch size is large, \eg
                                                   ~our experiments on ImageN...
 
 ? 
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 ! Undefined control sequence.
 l.51 ... particular, for any vector $v \in \mathbb
                                                   {R}^{\ABS{\theta}}$, with ...
@@ -796,6 +800,8 @@ l.87 }
       
 ? 
 )) (./experiment.tex
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
 LaTeX Font Info:    Try loading font information for OT1+pcr on input line 77.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ot1pcr.fd
@@ -805,9 +811,6 @@ Package microtype Info: Loading generic settings for font family
 (microtype)             `pcr' (encoding: OT1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
 LaTeX Font Info:    Try loading font information for OMS+ptm on input line 92.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/omsptm.fd
@@ -825,7 +828,7 @@ Package epstopdf Info: Source file: <figs/imagenet_dds.eps>
 (epstopdf)                    size: 221161 bytes
 (epstopdf)             Command: <repstopdf --outfile=figs/imagenet_dds-eps-conv
 erted-to.pdf figs/imagenet_dds.eps>
-(epstopdf)             \includegraphics on input line 9.
+(epstopdf)             \includegraphics on input line 5.
 Package epstopdf Info: Output file is already uptodate.
 
 <figs/imagenet_dds-eps-converted-to.pdf, id=359, 1419.3025pt x 336.25626pt>
@@ -833,7 +836,7 @@ File: figs/imagenet_dds-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/imagenet_dds-eps-converted-to.pdf>
 Package pdftex.def Info: figs/imagenet_dds-eps-converted-to.pdf used on input l
-ine 9.
+ine 5.
 (pdftex.def)             Requested size: 487.8225pt x 115.5724pt.
 Package epstopdf Info: Source file: <figs/cifar10_dds.eps>
 (epstopdf)                    date: 2020-01-11 11:15:21
@@ -843,7 +846,7 @@ Package epstopdf Info: Source file: <figs/cifar10_dds.eps>
 (epstopdf)                    size: 17307 bytes
 (epstopdf)             Command: <repstopdf --outfile=figs/cifar10_dds-eps-conve
 rted-to.pdf figs/cifar10_dds.eps>
-(epstopdf)             \includegraphics on input line 20.
+(epstopdf)             \includegraphics on input line 16.
 Package epstopdf Info: Output file is already uptodate.
 
 <figs/cifar10_dds-eps-converted-to.pdf, id=360, 402.50375pt x 255.95625pt>
@@ -851,8 +854,8 @@ File: figs/cifar10_dds-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/cifar10_dds-eps-converted-to.pdf>
 Package pdftex.def Info: figs/cifar10_dds-eps-converted-to.pdf used on input li
-ne 20.
-(pdftex.def)             Requested size: 146.34824pt x 93.06198pt.
+ne 16.
+(pdftex.def)             Requested size: 195.126pt x 124.08003pt.
 Package epstopdf Info: Source file: <figs/hs_prob_plot.eps>
 (epstopdf)                    date: 2020-01-11 17:02:11
 (epstopdf)                    size: 726539 bytes
@@ -861,16 +864,16 @@ Package epstopdf Info: Source file: <figs/hs_prob_plot.eps>
 (epstopdf)                    size: 89703 bytes
 (epstopdf)             Command: <repstopdf --outfile=figs/hs_prob_plot-eps-conv
 erted-to.pdf figs/hs_prob_plot.eps>
-(epstopdf)             \includegraphics on input line 33.
+(epstopdf)             \includegraphics on input line 27.
 Package epstopdf Info: Output file is already uptodate.
 
-<figs/hs_prob_plot-eps-converted-to.pdf, id=367, 1806.75pt x 1806.75pt>
+<figs/hs_prob_plot-eps-converted-to.pdf, id=361, 1806.75pt x 1806.75pt>
 File: figs/hs_prob_plot-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/hs_prob_plot-eps-converted-to.pdf>
 Package pdftex.def Info: figs/hs_prob_plot-eps-converted-to.pdf used on input l
-ine 33.
-(pdftex.def)             Requested size: 234.8775pt x 234.85817pt.
+ine 27.
+(pdftex.def)             Requested size: 211.3883pt x 211.3696pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
@@ -884,18 +887,18 @@ f>
 (epstopdf)                    size: 198058 bytes
 (epstopdf)             Command: <repstopdf --outfile=figs/uniform_prob_plot-eps
 -converted-to.pdf figs/uniform_prob_plot.eps>
-(epstopdf)             \includegraphics on input line 67.
+(epstopdf)             \includegraphics on input line 63.
 Package epstopdf Info: Output file is already uptodate.
 
-<figs/uniform_prob_plot-eps-converted-to.pdf, id=385, 1806.75pt x 1806.75pt>
+<figs/uniform_prob_plot-eps-converted-to.pdf, id=378, 1806.75pt x 1806.75pt>
 File: figs/uniform_prob_plot-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/uniform_prob_plot-eps-converted-to.pdf>
 Package pdftex.def Info: figs/uniform_prob_plot-eps-converted-to.pdf used on in
-put line 67.
-(pdftex.def)             Requested size: 234.8775pt x 234.85817pt.
+put line 63.
+(pdftex.def)             Requested size: 211.3883pt x 211.3696pt.
 
-Underfull \vbox (badness 5741) has occurred while \output is active []
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [7 <./figs/imagenet_dds-eps-converted-to.pdf> <./figs/cifar10_dds-eps-converte
 d-to.pdf> <./figs/hs_prob_plot-eps-converted-to.pdf>]) (./related_work.tex
@@ -1058,9 +1061,9 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 122.
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 11318 strings out of 492995
- 174166 string characters out of 6132704
- 340762 words of memory out of 5000000
+ 11319 strings out of 492995
+ 174180 string characters out of 6132704
+ 340744 words of memory out of 5000000
  14279 multiletter control sequences out of 15000+600000
  40421 words of font info for 200 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1090,10 +1093,10 @@ st/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts
 /type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw
 /times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utm
 r8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on icml_main.pdf (13 pages, 919992 bytes).
+Output written on icml_main.pdf (13 pages, 920560 bytes).
 PDF statistics:
- 808 PDF objects out of 1000 (max. 8388607)
- 644 compressed objects within 7 object streams
- 154 named destinations out of 1000 (max. 500000)
+ 807 PDF objects out of 1000 (max. 8388607)
+ 643 compressed objects within 7 object streams
+ 155 named destinations out of 1000 (max. 500000)
  30234 words of extra memory for PDF output out of 35830 (max. 10000000)
 

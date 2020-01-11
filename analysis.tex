@@ -1,9 +1,5 @@
 %\section{\label{sec:analysis} Analysis}
 %In this section, we perform an analysis of exactly how DDS is learning, and what kind of data it is learning to select.
-
-
-
-\subsection{Analysis}
 \begin{figure*}
     %\centering
     \includegraphics[width=\textwidth]{figs/imagenet_dds.eps}
@@ -17,7 +13,7 @@
   %\vspace{-12mm}
   %\begin{center}
   \centering
-    \includegraphics[width=0.3\textwidth]{figs/cifar10_dds.eps}
+    \includegraphics[width=0.4\textwidth]{figs/cifar10_dds.eps}
   %\end{center}
   %\vspace{-4mm}
   %\captionof{figure}{\label{fig:dds_distribution}Class distributions of CIFAR-10 4K.}
@@ -26,13 +22,17 @@
 %\end{wrapfigure}
 \end{figure}
 
-
-\textbf{Image Classification.} Prior work on heuristic data selection has found that the model performs better if we feed higher quality or more domain-relevant data  towards the end of training~\citep{dynamic_data_selection_nmt,dynamic}. Here we verify this observation by analyzing the learned importance weight at the end of training for image classification. Figure \ref{fig:dds_distribution} shows that at the end of training, \dds~learns to balance the class distribution, which is originally unbalanced due to the dataset creation. Figure \ref{fig:dds_score} shows that at the end of training, \dds~assigns higher probabilities to images with clearer class content from ImageNet. These results show that \dds~learns to focus on higher quality data towards the end of training.  
 \begin{figure}
     \centering
-    \includegraphics[width=\columnwidth]{figs/hs_prob_plot.eps}
+    \includegraphics[width=0.9\columnwidth]{figs/hs_prob_plot.eps}
     \caption{\label{fig:nmt_distrib_hs}Language usage for TCS$+$\dds{} by training step. The distribution is initialized to focus on the most related HRL, and \dds~learns to have a more balanced usage of all languages.}
 \end{figure}
+
+\subsection{Analysis}
+
+
+\textbf{Image Classification.} Prior work on heuristic data selection has found that the model performs better if we feed higher quality or more domain-relevant data  towards the end of training~\citep{dynamic_data_selection_nmt,dynamic}. Here we verify this observation by analyzing the learned importance weight at the end of training for image classification. Figure \ref{fig:dds_distribution} shows that at the end of training, \dds~learns to balance the class distribution, which is originally unbalanced due to the dataset creation. Figure \ref{fig:dds_score} shows that at the end of training, \dds~assigns higher probabilities to images with clearer class content from ImageNet. These results show that \dds~learns to focus on higher quality data towards the end of training.  
+
 
 \textbf{NMT.}
 Next, we focus on multilingual NMT, where the choice of data directly corresponds to picking a language, which has an intuitive interpretation. Since \dds~adapts the data weights dynamically to the model throughout training, here we analyze how the dynamics of learned weights.
@@ -58,15 +58,15 @@ Next, we focus on multilingual NMT, where the choice of data directly correspond
 %  %\captionof{figure}{\label{fig:nmt_distrib_hs}Language usage for TCS$+$\dds{} by training step. \textit{From left to right}: \texttt{aze}, \texttt{bel}, \texttt{glg}, \texttt{slk}.}
 %  \caption{\label{fig:nmt_distrib_hs}Language usage for TCS$+$\dds{} by training step. \textit{From left to right}: \texttt{aze}, \texttt{bel}, \texttt{glg}, \texttt{slk}.}
 %\end{center}
-
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{figs/uniform_prob_plot.eps}
+    \caption{\label{fig:nmt_distrib_uni}Language usage for \dds~by training step. \dds~learns to upweight the most related HRL after certain training steps.}
+\end{figure}
 %\noindent \textbf{Learned Language Distributions.}
 We plot the probability distribution of the four HRLs (because they have more data and thus larger impact on training) over the course of training.  Figure \ref{fig:nmt_distrib_hs} shows the change of language distribution for TCS+DDS. Since TCS selects the language with the largest vocabulary overlap with the LRL, the distribution is initialized to focus on the most related HRL. For all four LRLs, the percentage of their most related HRL starts to decrease as training continues. For \texttt{aze}, \dds~quickly comes back to using its most related HRL. For \texttt{gig} and \texttt{slk}, DDS learns to mainly use both \texttt{por} and \texttt{ces}, their corresponding HRL. However, for \texttt{bel}, \dds~continues the trend of using all four languages. This shows that \dds~is able to maximize the benefits of the multilingual data by having a more balanced usage of all languages. 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=\columnwidth]{figs/uniform_prob_plot.eps}
-    \caption{\label{fig:nmt_distrib_uni}Language usage for \dds~by training step. \dds~learns to upweight the most related HRL after certain training steps.}
-\end{figure}
+
 %For gig and slk, DDS learns to mainly use both por and ces, their corresponding HRL.
 
 Figure \ref{fig:nmt_distrib_uni} shows a more interesting trend of \dds~without heuristic initialization.

@@ -1,6 +1,6 @@
 \begin{table*}[t]
   \caption{\label{tab:results}Results for image classification accuracy (left) and multilingual MT BLEU (right). For MT, the statistical significance is indicated with $*$ (p $<$ 0.005) and $\dagger$ (p $<$ 0.0001). \dds~ outperforms the best baseline in all settings. }
-
+  \vspace{0.2cm}
    \begin{minipage}{.575\linewidth}
     \resizebox{\textwidth}{!}{
       \begin{tabular}{lcccc}
@@ -109,7 +109,11 @@ Note that both of these methods take advantage of structural properties of the m
 \end{itemize}
 
 %\gn{This is a little bit sudden to appear here directly in the experiments section. It might be good to mention this at the end of Section \ref{sec:efficient_reward} as a method to incorporate prior information? I think mentioning this there is actually a very good thing, as it adds to another thing that the proposed framework can do. If we mention it here, on the other hand, it seems a little bit like a hack that we added on at the last minute to make things work.}
-\dds~is a flexible framework to incorporate prior knowledge about the data using the scorer network, which can be especially important when the data has certain structural properties such as language or domain. We test such a setting of \dds~for both tasks. For image classification, we use \textbf{retrained \dds}, where we first train a model and scorer network using the standard \dds~till convergence. The trained scorer network can be considered as a good prior over the data, so we use it to train the final model from scratch again using \dds. For multilingual NMT, we experiment with \textbf{TCS+\dds}, where we initialize the parameters of \dds~with the TCS heuristic, then continue training. 
+\paragraph{DDS with Prior Knowledge} \dds~is a flexible framework to incorporate prior knowledge about the data using the scorer network, which can be especially important when the data has certain structural properties such as language or domain. We test such a setting of \dds~for both tasks.
+
+For image classification, we use \textbf{retrained \dds}, where we first train a model and scorer network using the standard \dds~till convergence. The trained scorer network can be considered as a good prior over the data, so we use it to train the final model from scratch again using \dds. For multilingual NMT, we experiment with \textbf{TCS+\dds}, where we initialize the parameters of \dds~with the TCS heuristic, then continue training. 
+
+
 
 % \noindent \textbf{Data Selection Baselines.} We compare our method against three strong baselines: 1) All: all 8 languages are used for training without any data selection; 2) Bi: we train on the combined datasets of each LRL and its related HRL, which is a special case of data selection that requires prior linguistic knowledge; 3) TCS~\citep{TCS}: the state-of-the-art data selection method for multilingual NMT. Given a target sentence, TCS conditionally samples a source sentence from the candidate languages based on simple heuristics such as vocabulary overlap.
 
