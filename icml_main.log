@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  11 JAN 2020 22:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  12 JAN 2020 21:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -746,10 +746,6 @@ l.49 ...pecially when the batch size is large, \eg
                                                   ~our experiments on ImageN...
 
 ? 
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
 ! Undefined control sequence.
 l.51 ... particular, for any vector $v \in \mathbb
                                                   {R}^{\ABS{\theta}}$, with ...
@@ -768,13 +764,13 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.87 }
+l.86 }
       
 ? 
 ! Misplaced alignment tab character &.
 <argument> ...\sum _{j=1}^B \sum _{i=1}^n \Big [ &
                                                    \text {grad}[S_i]^\top \t...
-l.87 }
+l.86 }
       
 ? 
 
@@ -784,19 +780,19 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.87 }
+l.86 }
       
 ? 
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.87 }
+l.86 }
       
 ? 
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.87 }
+l.86 }
       
 ? 
 )) (./experiment.tex
@@ -831,7 +827,7 @@ erted-to.pdf figs/imagenet_dds.eps>
 (epstopdf)             \includegraphics on input line 5.
 Package epstopdf Info: Output file is already uptodate.
 
-<figs/imagenet_dds-eps-converted-to.pdf, id=359, 1419.3025pt x 336.25626pt>
+<figs/imagenet_dds-eps-converted-to.pdf, id=358, 1419.3025pt x 336.25626pt>
 File: figs/imagenet_dds-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/imagenet_dds-eps-converted-to.pdf>
@@ -849,7 +845,7 @@ rted-to.pdf figs/cifar10_dds.eps>
 (epstopdf)             \includegraphics on input line 16.
 Package epstopdf Info: Output file is already uptodate.
 
-<figs/cifar10_dds-eps-converted-to.pdf, id=360, 402.50375pt x 255.95625pt>
+<figs/cifar10_dds-eps-converted-to.pdf, id=359, 402.50375pt x 255.95625pt>
 File: figs/cifar10_dds-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/cifar10_dds-eps-converted-to.pdf>
@@ -867,7 +863,7 @@ erted-to.pdf figs/hs_prob_plot.eps>
 (epstopdf)             \includegraphics on input line 27.
 Package epstopdf Info: Output file is already uptodate.
 
-<figs/hs_prob_plot-eps-converted-to.pdf, id=361, 1806.75pt x 1806.75pt>
+<figs/hs_prob_plot-eps-converted-to.pdf, id=360, 1806.75pt x 1806.75pt>
 File: figs/hs_prob_plot-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/hs_prob_plot-eps-converted-to.pdf>
@@ -890,7 +886,7 @@ f>
 (epstopdf)             \includegraphics on input line 63.
 Package epstopdf Info: Output file is already uptodate.
 
-<figs/uniform_prob_plot-eps-converted-to.pdf, id=378, 1806.75pt x 1806.75pt>
+<figs/uniform_prob_plot-eps-converted-to.pdf, id=377, 1806.75pt x 1806.75pt>
 File: figs/uniform_prob_plot-eps-converted-to.pdf Graphic file (type pdf)
 
 <use figs/uniform_prob_plot-eps-converted-to.pdf>
@@ -965,51 +961,51 @@ LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <0.5> not available
 LaTeX Font Warning: Command \small invalid in math mode on input line 21.
 
 
-Overfull \hbox (111.96667pt too wide) detected at line 28
+Overfull \hbox (8.28163pt too wide) detected at line 31
 [][]
  []
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 32.
+LaTeX Font Warning: Command \small invalid in math mode on input line 35.
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 45.
+LaTeX Font Warning: Command \small invalid in math mode on input line 48.
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 53.
+LaTeX Font Warning: Command \small invalid in math mode on input line 56.
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 61.
+LaTeX Font Warning: Command \small invalid in math mode on input line 64.
 
 ! Undefined control sequence.
-l.64     &= \eta_t \cdot \nabla_\psi \mathbb
+l.67     &= \eta_t \cdot \nabla_\psi \mathbb
                                             {E}_{x, y \sim p(X, Y; \psi)} \l...
 
 ? 
 ! Undefined control sequence.
-l.65     &= \eta_t \mathbb
+l.68     &= \eta_t \mathbb
                           {E}_{x, y \sim p(X, Y; \psi)} \left[\left(\nabla J...
 
 ? 
 
-Overfull \hbox (53.27869pt too wide) detected at line 67
+Overfull \hbox (53.27869pt too wide) detected at line 70
 [][]
  []
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 77.
+LaTeX Font Warning: Command \small invalid in math mode on input line 80.
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 86.
+LaTeX Font Warning: Command \small invalid in math mode on input line 89.
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 98.
+LaTeX Font Warning: Command \small invalid in math mode on input line 101.
 
 
-LaTeX Font Warning: Command \small invalid in math mode on input line 109.
+LaTeX Font Warning: Command \small invalid in math mode on input line 112.
 
 ! Undefined control sequence.
-l.116 ...\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie
+l.119 ...\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie
                                                   ~$g_t$, are close to $0$. ...
 
 ? 
@@ -1021,11 +1017,11 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.131 \begin{table}[H]
+l.134 \begin{table}[H]
                       
 ? 
 
-Underfull \hbox (badness 3525) in paragraph at lines 154--155
+Underfull \hbox (badness 3525) in paragraph at lines 157--158
 []\OT1/ptm/m/n/10 (+20) We use the co-sine learn-ing rate de-cay sched-
  []
 
@@ -1061,8 +1057,8 @@ Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 122.
 ### simple group (level 1) entered at line 1061 ({)
 ### bottom level 
 Here is how much of TeX's memory you used:
- 11319 strings out of 492995
- 174180 string characters out of 6132704
+ 11318 strings out of 492995
+ 174166 string characters out of 6132704
  340744 words of memory out of 5000000
  14279 multiletter control sequences out of 15000+600000
  40421 words of font info for 200 fonts, out of 8000000 for 9000
@@ -1093,10 +1089,10 @@ st/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts
 /type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw
 /times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utm
 r8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on icml_main.pdf (13 pages, 920560 bytes).
+Output written on icml_main.pdf (13 pages, 920674 bytes).
 PDF statistics:
- 807 PDF objects out of 1000 (max. 8388607)
- 643 compressed objects within 7 object streams
- 155 named destinations out of 1000 (max. 500000)
+ 806 PDF objects out of 1000 (max. 8388607)
+ 642 compressed objects within 7 object streams
+ 154 named destinations out of 1000 (max. 500000)
  30234 words of extra memory for PDF output out of 35830 (max. 10000000)
 

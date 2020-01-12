@@ -101,11 +101,11 @@ The connection between $\psi$ and $\theta$ in Eqn. \ref{eqn:psi_theta_argmin} sh
   \label{eqn:two_step_update}
   \begin{aligned}
    & \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})\\
-   & \quad\quad\quad\quad \text{apply chain rule:} \\
+   & \quad\quad\quad\quad \text{(apply chain rule:)} \\
     &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) \\
-    & \quad\quad\quad\quad  \text{substitute $\theta_t$ from Eqn~\ref{eqn:theta_update}:} \\
+    & \quad\quad\quad\quad  \text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update}:)} \\
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - \nabla_\theta J(\theta_{t-1}, \psi) \right)  \\
-      & \quad\quad\quad\quad  \text{assume $\nabla_\psi \theta_{t-1} \approx 0$:} \\
+      & \quad\quad\quad\quad  \text{(assume $\nabla_\psi \theta_{t-1} \approx 0$:)} \\
       &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi  \left( \nabla_\theta J(\theta_{t-1}, \psi) \right) \\
       &= -\nabla_\psi \mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} )\right] \\
     &= -\mathbb{E}_{x, y \sim P(X, Y; \psi)} \left[\left( \nabla_\theta J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right) \\
