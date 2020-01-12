@@ -10,8 +10,7 @@ First, instead of directly modeling $p(X,Y;\psi)$, we assume a uniform distribut
 and only parameterize the conditional distribution of which source language sentence to pick given the target sentence: $p(X|y;\psi)$. This design follows the formulation of Target Conditioned Sampling~(TCS;~\citet{TCS}), an existing state-of-the-art data selection method that uses a similar setting but models the distribution $p(X|y)$ using heuristics.  Since the scorer only needs to model a simple distribution over training languages, we use a fully connected 2-layer perceptron network.
 Second, we only update $\psi$ after updating the NMT model for a fixed number of steps.
 Third, we sample the data according to $p(X|y;\psi)$ to get a Monte Carlo estimate of the objective in Eqn.~\ref{eqn:psi_theta_argmin}.
-This significantly reduces the training time compared to using all data.
-The pseudo code of the training process is in Algorithm~\ref{alg:nmt_dds}.
+This significantly reduces the training time compared to using all data. The pseudo code of the training process is in Algorithm~\ref{alg:nmt_dds}. In practice, we use cosine distance instead of dot product to measure the gradient alignment between the training and dev language, because cosine distance has smaller variance and thus makes the scorer update more stable.
 
 % We then train a parameterized distribution $p(x, y;\psi)$ with a support over $\mathcal{D}_{\text{train}}$, such that selecting training data according to this distribution leads to the optimal NMT model $\theta^*$ on the language $S$. 
 %That is, $\psi$ satisfies the following condition
