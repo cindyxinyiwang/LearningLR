@@ -85,26 +85,26 @@
 \citation{TCS}
 \citation{significance_nmt}
 \citation{dynamic_data_selection_nmt,dynamic}
-\newlabel{tab:results}{{1}{6}{Results for image classification accuracy (left) and multilingual MT BLEU (right). For MT, the statistical significance is indicated with $*$ (p $<$ 0.005) and $\dagger $ (p $<$ 0.0001). \dds ~ outperforms the best baseline in all settings}{table.1}{}}
+\newlabel{tab:results}{{1}{6}{Results for image classification accuracy (left) and multilingual MT BLEU (right). For MT, the statistical significance is indicated with $*$ (p $<$ 0.005) and $\dagger $ (p $<$ 0.0001). \dds ~ outperforms the best baseline in all settings. For both image classification and NMT, \dds ~performs better than other intelligent data selection methods}{table.1}{}}
 \newlabel{fig:dds_score}{{2}{7}{Example images from the ImageNet and their weights assigned by \dds . A trained DDS scorer assigns higher probabilities to images from ImageNet, in which the class content is more clear. Each image's label and weight in the minibatch is shown}{figure.2}{}}
 \newlabel{fig:dds_distribution}{{3}{7}{A trained DDS scorer learns to balance the class distributions of CIFAR-10 4K}{figure.3}{}}
 \newlabel{fig:nmt_distrib_hs}{{4}{7}{Language usage for TCS$+$\dds {} by training step. The distribution is initialized to focus on the most related HRL, and \dds ~learns to have a more balanced usage of all languages}{figure.4}{}}
-\citation{cl_bengio,SpitkovskyAJ10,baysian_curriculum,zhang2016boosting,automate_cl_GravesBMMK17,zhang2018empirical,platanios19naacl}
-\citation{spl_kumar,spl_visual_category}
-\citation{learn_to_teach}
-\citation{bilevel_optim,hier_optim,darts,hyper_grad,learn_reweight}
+\newlabel{fig:nmt_distrib_uni}{{5}{7}{Language usage for \dds ~by training step. \dds ~learns to upweight the most related HRL after certain training steps}{figure.5}{}}
 \citation{moore2010intelligent,axelrod2011domain,domain_adapt_transfer,jiang-zhai-2007-instance,foster-etal-2010-discriminative,wang-etal-2017-instance}
 \citation{domain_adapt_transfer}
 \citation{vyas-etal-2018-identifying,pham-etal-2018-fixing}
 \citation{submodular_mt,learn_mix_submodular}
-\citation{importance_weight}
 \citation{importance_weight,learn_reweight,jiang-zhai-2007-instance,domain_adapt_transfer}
 \citation{learn_reweight}
 \citation{learn_reweight}
+\citation{importance_weight}
+\citation{cl_bengio,SpitkovskyAJ10,baysian_curriculum,zhang2016boosting,automate_cl_GravesBMMK17,zhang2018empirical,platanios19naacl}
+\citation{spl_kumar,spl_visual_category}
+\citation{learn_to_teach}
+\citation{bilevel_optim,hier_optim,darts,hyper_grad,learn_reweight}
 \citation{reinforce_cotrain,rl_nmt,learn_active_learn}
 \bibdata{main}
 \bibcite{hier_optim}{{1}{1992}{{Anandalingam \& Friesz}}{{Anandalingam and Friesz}}}
-\newlabel{fig:nmt_distrib_uni}{{5}{8}{Language usage for \dds ~by training step. \dds ~learns to upweight the most related HRL after certain training steps}{figure.5}{}}
 \newlabel{sec:related_work}{{5}{8}{}{section.5}{}}
 \newlabel{sec:conclusion}{{6}{8}{}{section.6}{}}
 \bibcite{axelrod2011domain}{{2}{2011}{{Axelrod et~al.}}{{Axelrod, He, and Gao}}}
