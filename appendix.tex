@@ -2,7 +2,7 @@
 
 \subsection{\label{app:grad_of_optimizers}Deriving gradient of $\psi$ for Different Optimizers}
 %\gn{It seems reasonable to have this as a top-level section, so I changed it accordingly this has started to get into details that are probably better to separate from the overall high-level idea of DDS.}
-First, we rewrite the update rule of $\theta$ in  Eqn. \ref{eqn:theta_update} to incorporate the effect of its specific optimization algorithm.
+First, we rewrite the update rule of $\theta$ in \autoref{eqn:theta_update} to incorporate the effect of its specific optimization algorithm.
 
 For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochastic gradient update. Specifically, at time step $t$, we update
 \begin{equation}
@@ -14,7 +14,7 @@ For a fixed value of $\psi$, $J(\theta, \psi)$ can be optimized using a stochast
 \end{equation}
 where $g(\cdot)$ is any function that may be applied to the gradient $\nabla_\theta J(\theta_{t-1}, \psi)$. For instance, in standard gradient descent $g(\cdot)$ is simply a linear scaling of $\nabla_\theta J(\theta_{t-1}, \psi)$ by a learning rate $\eta_t$, while with the Adam optimizer~\citep{adam} $g$ also modifies the learning rate on a parameter-by-parameter basis.
 
-Due to the relationship between $\theta_t$ and $\psi$ as in Eqn~\ref{eqn:theta_update_rule}, $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. 
+Due to the relationship between $\theta_t$ and $\psi$ as in \autoref{eqn:theta_update_rule}, $J(\theta_t, \mathcal{D}_\text{dev})$ is differentiable with respect to $\psi$. 
 By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$ as follows:
 \begin{equation}
   \label{eqn:two_step_update_general}
@@ -23,13 +23,13 @@ By the chain rule, we can compute the gradient $\nabla_\psi J(\theta_t, \mathcal
       &\text{(chain rule):} \\
     \nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \theta_t(\psi) \\
-      &\text{(substitute $\theta_t$ from Eqn~\ref{eqn:theta_update_rule}):} \\
+      &\text{(substitute $\theta_t$ from \autoref{eqn:theta_update_rule}):} \\
       &= \nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi \left( \theta_{t-1} - g\big( \nabla_\theta J(\theta_{t-1}) \big) \right) \\
       &\text{(assume $\nabla_\psi \theta_{t-1} \approx 0$)} \\
       &\approx -\nabla_{\theta_t} J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\psi g\big( \nabla_\theta J(\theta_{t-1}) \big)  %\paul{why? doesn't sound like this would be the case. More specifically either you have a reason to say $\partial \theta_{t-1} / \partial \psi = 0$(and not $\approx$) or you must justify this experimentally.})}
   \end{aligned}
 \end{equation}
-Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. Eqn~\ref{eqn:two_step_update_general} leads to a rule to update $\psi$ using gradient descent:
+Here, we make a Markov assumption that $\nabla_\psi \theta_{t-1} \approx 0$, assuming that at step $t$, given $\theta_{t-1}$ we do not care about how the values of $\psi$ from previous steps led to $\theta_{t-1}$. \autoref{eqn:two_step_update_general} leads to a rule to update $\psi$ using gradient descent:
 \begin{equation}
   \label{eqn:psi_update_rule}
    \small
@@ -50,7 +50,7 @@ Here we first derive $\nabla_\psi g$ for the general stochastic gradient descent
     \theta_t &\leftarrow \theta_{t-1} - \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
   \end{aligned}
 \end{equation}
-where $\eta_t$ is the learning rate. Matching the updates in Eqn~\ref{eqn:sgd_update} with the generic framework in Eqn~\ref{eqn:theta_update_rule}, we can see that $g$ in Eqn~\ref{eqn:theta_update_rule} has the form: %\gn{$J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$? There seem to be a few of these inconsistencies below as well, so please check. Also, which time step of $\theta$ does the gradient depend on?}
+where $\eta_t$ is the learning rate. Matching the updates in \autoref{eqn:sgd_update} with the generic framework in \autoref{eqn:theta_update_rule}, we can see that $g$ in \autoref{eqn:theta_update_rule} has the form: %\gn{$J(\theta_{t-1})$ should be $J(\theta_{t-1}, \psi)$? There seem to be a few of these inconsistencies below as well, so please check. Also, which time step of $\theta$ does the gradient depend on?}
 \begin{equation}
   \label{eqn:momentum_update_g}
    \small
@@ -58,7 +58,7 @@ where $\eta_t$ is the learning rate. Matching the updates in Eqn~\ref{eqn:sgd_up
     g\big(\nabla_\theta J(\theta_{t-1}, \psi)\big) = \eta_t \nabla_\theta J(\theta_{t-1}, \psi)
   \end{aligned}
 \end{equation}
-This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$, allowing the exact differentiation of $g$ with respect to $\psi$. From Eqn~\ref{eqn:psi_update_rule}, we have
+This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$, allowing the exact differentiation of $g$ with respect to $\psi$. From \autoref{eqn:psi_update_rule}, we have
 \begin{equation}
   \label{eqn:momentum_update_for_psi}
    \small
@@ -92,7 +92,7 @@ where $\mu_t$ is the momentum coefficient and $\eta_t$ is the learning rate. Thi
     g'(x) &= \eta_t
   \end{aligned}
 \end{equation}
-Therefore, the computation of the gradient $\nabla_{\psi}$ for the Momentum update is exactly the same with the standard SGD update rule in Eqn \ref{eqn:momentum_update_for_psi}.
+Therefore, the computation of the gradient $\nabla_{\psi}$ for the Momentum update is exactly the same with the standard SGD update rule in \autoref{eqn:momentum_update_for_psi}.
 
 
 \paragraph{Adam Updates.} We use a slightly modified update rule based on Adam~\citep{adam}:
@@ -116,7 +116,7 @@ where $\beta_2$ and $\eta_t$ are hyper-parameters. This means that $g$ is a comp
   \end{aligned}
 \end{equation}
 %\paul{So all of this is under the assumption that $v_{t-1}$ is independent on $\psi$ right? maybe bring it up?}
-the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. Here the approximation makes sense because we empirically observe that the individual values of the gradient vector $\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie~$g_t$, are close to $0$. Furthermore, for Adam, we usually use $\beta_2 = 0.999$. Thus, the value $(1 - \beta_2) x^2$ in the denominator of Eqn~\ref{eqn:adam_update_g} is negligible. With this approximation, the computation of the gradient $\nabla_\psi$ is almost the same with that for SGD in Eqn~\ref{eqn:momentum_update_for_psi}, with one extra component-wise scaling by the term in Eqn~\ref{eqn:adam_update_g}.
+the last equation holds because we assume $v_{t-1}$ is independent of $\psi$. Here the approximation makes sense because we empirically observe that the individual values of the gradient vector $\nabla_\theta J(\theta_{t-1}, \psi)$,~\ie~$g_t$, are close to $0$. Furthermore, for Adam, we usually use $\beta_2 = 0.999$. Thus, the value $(1 - \beta_2) x^2$ in the denominator of \autoref{eqn:adam_update_g} is negligible. With this approximation, the computation of the gradient $\nabla_\psi$ is almost the same with that for SGD in \autoref{eqn:momentum_update_for_psi}, with one extra component-wise scaling by the term in \autoref{eqn:adam_update_g}.
 
 \subsection{\label{app:nmt_hparam} Hyperparameters for multilingual NMT}
 In this section, we give a detailed description of the hyperparameters used for the multilingual NMT experiments.
@@ -164,7 +164,7 @@ The batch sizes for CIFAR-10 and for ImageNet are $128$ and $4096$, running for 
 \end{itemize}
 
 %\subsection{\label{app:image_detail} Training details for image classification}
-%Our experiments were conducted on second-generation Tensor Processing Units (TPUv2). There were several important implementation details related to improving training efficiency with DDS for ImageNet models (these were not needed for the smaller CIFAR-10 training set). First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \ref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the DDS model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the DDS model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example.
+%Our experiments were conducted on second-generation Tensor Processing Units (TPUv2). There were several important implementation details related to improving training efficiency with DDS for ImageNet models (these were not needed for the smaller CIFAR-10 training set). First, each batch of $4096$ training instances for ImageNet is processed in parallel on $32$ TPU cores, each working on $128$ images. When we compute $p(\hat{x}, \hat{y}; \psi)$ (in~Section \autoref{sec:image_method}), the softmax function is computed \textit{locally on each core} to reduce the synchronization overhead. Second, since we do not need the parameters $\psi$ of the DDS model, we ignore all batch normalization moving average updates when we pass images through $p(\hat{x}, \hat{y}; \psi)$. We also only batch-normalize the DDS model locally on each TPU core. Controlled profiling measures show that the aforementioned details speed up the training process by almost $2.5 \times$. Third, following~\citet{neural_combi} and~\citet{enas}, for ImageNet, we apply a $\tanh$ activation to the logits prior to the softmax to compute $p(\hat{x}, \hat{y}; \psi)$, which softens the softmax distribution and prevents the $p(\hat{x}, \hat{y}; \psi)$ from collapsing into always choosing a particular example.
 
 %\subsection{Training Time}
 %For NMT, the baseline TCS takes 10 hours, and DDS takes about 24 hours to finish. Our NMT code is not optimized and can potentially be made much more efficient. 
