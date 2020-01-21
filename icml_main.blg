@@ -3,49 +3,50 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: icml_main.aux
 The style file: icml2019.bst
 Database file #1: main.bib
+Warning--empty booktitle in learn_what_data_learn
 Warning--empty institution in cifar10
 Warning--empty journal in darts
 Warning--empty year in wang-etal-2017-instance
 Warning--empty year in wang-etal-2017-instance
-You've used 62 entries,
+You've used 63 entries,
             2773 wiz_defined-function locations,
-            830 strings with 13986 characters,
-and the built_in function-call counts, 30142 in all, are:
-= -- 2391
-> -- 2221
+            833 strings with 14098 characters,
+and the built_in function-call counts, 30695 in all, are:
+= -- 2433
+> -- 2269
 < -- 22
-+ -- 745
-- -- 681
-* -- 2426
-:= -- 4641
-add.period$ -- 189
-call.type$ -- 62
-change.case$ -- 414
++ -- 762
+- -- 696
+* -- 2478
+:= -- 4728
+add.period$ -- 193
+call.type$ -- 63
+change.case$ -- 422
 chr.to.int$ -- 60
-cite$ -- 128
-duplicate$ -- 1454
-empty$ -- 2443
-format.name$ -- 767
-if$ -- 6318
-int.to.chr$ -- 3
+cite$ -- 131
+duplicate$ -- 1477
+empty$ -- 2482
+format.name$ -- 783
+if$ -- 6430
+int.to.chr$ -- 4
 int.to.str$ -- 1
-missing$ -- 61
-newline$ -- 320
-num.names$ -- 248
-pop$ -- 991
+missing$ -- 62
+newline$ -- 326
+num.names$ -- 252
+pop$ -- 1011
 preamble$ -- 1
-purify$ -- 351
+purify$ -- 358
 quote$ -- 0
-skip$ -- 1057
+skip$ -- 1071
 stack$ -- 0
-substring$ -- 328
-swap$ -- 160
+substring$ -- 330
+swap$ -- 163
 text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 682
-warning$ -- 4
-while$ -- 203
+type$ -- 693
+warning$ -- 5
+while$ -- 206
 width$ -- 0
-write$ -- 764
-(There were 4 warnings)
+write$ -- 777
+(There were 5 warnings)

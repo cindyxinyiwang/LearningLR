@@ -1,4 +1,4 @@
-\begin{thebibliography}{62}
+\begin{thebibliography}{63}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -53,10 +53,18 @@ Du, Y., Czarnecki, W.~M., Jayakumar, S.~M., Pascanu, R., and Lakshminarayanan,
 \newblock \emph{CoRR}, abs/1812.02224, 2018.
 \newblock URL \url{http://arxiv.org/abs/1812.02224}.
 
-\bibitem[Fan et~al.(2018)Fan, Tian, Qin, Li, and Liu]{learn_to_teach}
+\bibitem[Fan et~al.(2018{\natexlab{a}})Fan, Tian, Qin, Bian, and
+  Liu]{learn_what_data_learn}
+Fan, Y., Tian, F., Qin, T., Bian, J., and Liu, T.-Y.
+\newblock Learning what data to learn.
+\newblock 2018{\natexlab{a}}.
+\newblock URL \url{http://arxiv.org/abs/1901.08933}.
+
+\bibitem[Fan et~al.(2018{\natexlab{b}})Fan, Tian, Qin, Li, and
+  Liu]{learn_to_teach}
 Fan, Y., Tian, F., Qin, T., Li, X., and Liu, T.
 \newblock Learning to teach.
-\newblock In \emph{ICLR}, 2018.
+\newblock In \emph{ICLR}, 2018{\natexlab{b}}.
 
 \bibitem[Fang et~al.(2017)Fang, Li, and Cohn]{learn_active_learn}
 Fang, M., Li, Y., and Cohn, T.

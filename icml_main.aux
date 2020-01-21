@@ -51,9 +51,9 @@
 \newlabel{sec:diff_data_selection}{{2.3}{3}{}{subsection.2.3}{}}
 \newlabel{eqn:psi_theta_argmin}{{5}{3}{}{equation.2.5}{}}
 \newlabel{eqn:two_step_update}{{6}{3}{}{equation.2.6}{}}
-\newlabel{sec:formualtion}{{3}{3}{}{section.3}{}}
 \citation{nmt_transfer,rapid_adapt_nmt}
 \citation{TCS}
+\newlabel{sec:formualtion}{{3}{4}{}{section.3}{}}
 \newlabel{sec:image_method}{{3.1}{4}{}{subsection.3.1}{}}
 \newlabel{alg:image_classification_dds}{{1}{4}{}{algocf.1}{}}
 \newlabel{alg:grad_update_model}{{5}{4}{}{AlgoLine.1.5}{}}
@@ -84,12 +84,12 @@
 \citation{rapid_adapt_nmt}
 \citation{TCS}
 \citation{significance_nmt}
+\citation{learn_what_data_learn}
 \citation{dynamic_data_selection_nmt,dynamic}
 \newlabel{tab:results}{{1}{6}{Results for image classification accuracy (left) and multilingual MT BLEU (right). For MT, the statistical significance is indicated with $*$ (p $<$ 0.005) and $\dagger $ (p $<$ 0.0001). \dds ~ outperforms the best baseline in all settings. For both image classification and NMT, \dds ~performs better than other intelligent data selection methods}{table.1}{}}
 \newlabel{fig:dds_score}{{2}{7}{Example images from the ImageNet and their weights assigned by \dds . A trained DDS scorer assigns higher probabilities to images from ImageNet, in which the class content is more clear. Each image's label and weight in the minibatch is shown}{figure.2}{}}
 \newlabel{fig:dds_distribution}{{3}{7}{A trained DDS scorer learns to balance the class distributions of CIFAR-10 4K}{figure.3}{}}
 \newlabel{fig:nmt_distrib_hs}{{4}{7}{Language usage for TCS$+$\dds {} by training step. The distribution is initialized to focus on the most related HRL, and \dds ~learns to have a more balanced usage of all languages}{figure.4}{}}
-\newlabel{fig:nmt_distrib_uni}{{5}{7}{Language usage for \dds ~by training step. \dds ~learns to upweight the most related HRL after certain training steps}{figure.5}{}}
 \citation{moore2010intelligent,axelrod2011domain,domain_adapt_transfer,jiang-zhai-2007-instance,foster-etal-2010-discriminative,wang-etal-2017-instance}
 \citation{domain_adapt_transfer}
 \citation{vyas-etal-2018-identifying,pham-etal-2018-fixing}
@@ -103,10 +103,11 @@
 \citation{learn_to_teach}
 \citation{bilevel_optim,hier_optim,darts,hyper_grad,learn_reweight}
 \citation{reinforce_cotrain,rl_nmt,learn_active_learn}
-\bibdata{main}
-\bibcite{hier_optim}{{1}{1992}{{Anandalingam \& Friesz}}{{Anandalingam and Friesz}}}
+\newlabel{fig:nmt_distrib_uni}{{5}{8}{Language usage for \dds ~by training step. \dds ~learns to upweight the most related HRL after certain training steps}{figure.5}{}}
 \newlabel{sec:related_work}{{5}{8}{}{section.5}{}}
 \newlabel{sec:conclusion}{{6}{8}{}{section.6}{}}
+\bibdata{main}
+\bibcite{hier_optim}{{1}{1992}{{Anandalingam \& Friesz}}{{Anandalingam and Friesz}}}
 \bibcite{axelrod2011domain}{{2}{2011}{{Axelrod et~al.}}{{Axelrod, He, and Gao}}}
 \bibcite{attention}{{3}{2015}{{Bahdanau et~al.}}{{Bahdanau, Cho, and Bengio}}}
 \bibcite{hyper_grad}{{4}{2018}{{Baydin et~al.}}{{Baydin, Cornish, Mart{\'{\i }}nez{-}Rubio, Schmidt, and Wood}}}
@@ -114,65 +115,64 @@
 \bibcite{significance_nmt}{{6}{2011}{{Clark et~al.}}{{Clark, Dyer, Lavie, and Smith}}}
 \bibcite{bilevel_optim}{{7}{2007}{{Colson et~al.}}{{Colson, Marcotte, and Savard}}}
 \bibcite{cos_sim}{{8}{2018}{{Du et~al.}}{{Du, Czarnecki, Jayakumar, Pascanu, and Lakshminarayanan}}}
-\bibcite{learn_to_teach}{{9}{2018}{{Fan et~al.}}{{Fan, Tian, Qin, Li, and Liu}}}
-\bibcite{learn_active_learn}{{10}{2017}{{Fang et~al.}}{{Fang, Li, and Cohn}}}
-\bibcite{finn2017model}{{11}{2017}{{Finn et~al.}}{{Finn, Abbeel, and Levine}}}
-\bibcite{foster-etal-2010-discriminative}{{12}{2010}{{Foster et~al.}}{{Foster, Goutte, and Kuhn}}}
-\bibcite{automate_cl_GravesBMMK17}{{13}{2017}{{Graves et~al.}}{{Graves, Bellemare, Menick, Munos, and Kavukcuoglu}}}
-\bibcite{grezl2007probabilistic}{{14}{2007}{{Gr{\'e}zl et~al.}}{{Gr{\'e}zl, Karafi{\'a}t, Kont{\'a}r, and Cernocky}}}
-\bibcite{res_net}{{15}{2016}{{He et~al.}}{{He, Zhang, Ren, and Sun}}}
-\bibcite{batch_norm}{{16}{2015}{{Ioffe \& Szegedy}}{{Ioffe and Szegedy}}}
-\bibcite{jiang-zhai-2007-instance}{{17}{2007}{{Jiang \& Zhai}}{{Jiang and Zhai}}}
-\bibcite{spcl}{{18}{2015}{{Jiang et~al.}}{{Jiang, Meng, Zhao, Shan, and Hauptmann}}}
-\bibcite{mentornet}{{19}{2018}{{Jiang et~al.}}{{Jiang, Zhou, Leung, Li, and Fei{-}Fei}}}
-\bibcite{adam}{{20}{2015}{{Kingma \& Ba}}{{Kingma and Ba}}}
-\bibcite{submodular_mt}{{21}{2014}{{Kirchhoff \& Bilmes}}{{Kirchhoff and Bilmes}}}
-\bibcite{imagenet_generalize_better}{{22}{2019}{{Kornblith et~al.}}{{Kornblith, Shlens, and Le}}}
-\bibcite{cifar10}{{23}{2009}{{Krizhevsky}}{{}}}
-\bibcite{rl_nmt}{{24}{2019}{{Kumar et~al.}}{{Kumar, Foster, Cherry, and Krikun}}}
-\bibcite{spl_kumar}{{25}{2010}{{Kumar et~al.}}{{Kumar, Packer, and Koller}}}
-\bibcite{spl_visual_category}{{26}{2011}{{Lee \& Grauman}}{{Lee and Grauman}}}
-\bibcite{lipton2018detecting}{{27}{2018}{{Lipton et~al.}}{{Lipton, Wang, and Smola}}}
-\bibcite{darts}{{28}{2019{a}}{{Liu et~al.}}{{Liu, Simonyan, and Yang}}}
-\bibcite{meta_aux_learn}{{29}{2019{b}}{{Liu et~al.}}{{Liu, Davison, and Johns}}}
-\bibcite{cosine_lr}{{30}{2017}{{Loshchilov \& Hutter}}{{Loshchilov and Hutter}}}
-\bibcite{moore2010intelligent}{{31}{2010}{{Moore \& Lewis}}{{Moore and Lewis}}}
-\bibcite{nesterov}{{32}{1983}{{Nesterov}}{{}}}
-\bibcite{rapid_adapt_nmt}{{33}{2018}{{Neubig \& Hu}}{{Neubig and Hu}}}
-\bibcite{domain_adapt_transfer}{{34}{2018}{{Ngiam et~al.}}{{Ngiam, Peng, Vasudevan, Kornblith, Le, and Pang}}}
-\bibcite{bleu}{{35}{2002}{{Papineni et~al.}}{{Papineni, Roukos, Ward, and Zhu}}}
-\bibcite{pham-etal-2018-fixing}{{36}{2018}{{Pham et~al.}}{{Pham, Crego, Senellart, and Yvon}}}
-\bibcite{platanios19naacl}{{37}{2019}{{Platanios et~al.}}{{Platanios, Stretcu, Neubig, Poczos, and Mitchell}}}
-\bibcite{ted_pretrain_emb}{{38}{2018}{{Qi et~al.}}{{Qi, Sachan, Felix, Padmanabhan, and Neubig}}}
-\bibcite{learn_reweight}{{39}{2018}{{Ren et~al.}}{{Ren, Zeng, Yang, and Urtasun}}}
-\bibcite{imagenet}{{40}{2015}{{Russakovsky et~al.}}{{Russakovsky, Deng, Su, Krause, Satheesh, Ma, Huang, Karpathy, Khosla, Bernstein, Berg, and Fei-Fei}}}
-\bibcite{lownmt19}{{41}{2019}{{Sennrich \& Zhang}}{{Sennrich and Zhang}}}
-\bibcite{shimodaira2000improving}{{42}{2000}{{Shimodaira}}{{}}}
-\bibcite{importance_weight}{{43}{2017}{{Sivasankaran et~al.}}{{Sivasankaran, Vincent, and Illina.}}}
-\bibcite{SpitkovskyAJ10}{{44}{2010}{{Spitkovsky et~al.}}{{Spitkovsky, Alshawi, and Jurafsky}}}
-\bibcite{dropout}{{45}{2014}{{Srivastava et~al.}}{{Srivastava, Hinton, Krizhevsky, Sutskever, and Salakhutdinov}}}
-\bibcite{learn_mix_submodular}{{46}{2014}{{Tschiatschek et~al.}}{{Tschiatschek, Iyer, Wei, and Bilmes}}}
-\bibcite{baysian_curriculum}{{47}{2016}{{Tsvetkov et~al.}}{{Tsvetkov, Faruqui, Ling, MacWhinney, and Dyer}}}
-\bibcite{dynamic_data_selection_nmt}{{48}{2017}{{van~der Wees et~al.}}{{van~der Wees, Bisazza, and Monz}}}
-\bibcite{vaswani2017attention}{{49}{2017}{{Vaswani et~al.}}{{Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin}}}
-\bibcite{vyas-etal-2018-identifying}{{50}{2018}{{Vyas et~al.}}{{Vyas, Niu, and Carpuat}}}
-\bibcite{wang-etal-2017-instance}{{51}{}{{Wang et~al.}}{{Wang, Utiyama, Liu, Chen, and Sumita}}}
-\bibcite{dynamic}{{52}{2019{a}}{{Wang et~al.}}{{Wang, Caswell, and Chelba}}}
-\bibcite{TCS}{{53}{2019}{{Wang \& Neubig}}{{Wang and Neubig}}}
-\bibcite{sde}{{54}{2019{b}}{{Wang et~al.}}{{Wang, Pham, Arthur, and Neubig}}}
-\bibcite{reinforce}{{55}{1992}{{Williams}}{{}}}
-\bibcite{reinforce_cotrain}{{56}{2018}{{Wu et~al.}}{{Wu, Li, and Wang}}}
-\bibcite{resnext}{{57}{2017}{{Xie et~al.}}{{Xie, Girshick, Doll{\'a}r, Tu, and He}}}
-\bibcite{wide_res_net}{{58}{2016}{{Zagoruyko \& Komodakis}}{{Zagoruyko and Komodakis}}}
-\bibcite{overfit_random_examples}{{59}{2017}{{Zhang et~al.}}{{Zhang, Bengio, Hardt, Recht, and Vinyals}}}
-\bibcite{zhang2016boosting}{{60}{2016}{{Zhang et~al.}}{{Zhang, Kim, Crego, and Senellart}}}
-\bibcite{zhang2018empirical}{{61}{2018}{{Zhang et~al.}}{{Zhang, Kumar, Khayrallah, Murray, Gwinnup, Martindale, McNamee, Duh, and Carpuat}}}
-\bibcite{nmt_transfer}{{62}{2016}{{Zoph et~al.}}{{Zoph, Yuret, May, and Knight}}}
+\bibcite{learn_what_data_learn}{{9}{2018{a}}{{Fan et~al.}}{{Fan, Tian, Qin, Bian, and Liu}}}
+\bibcite{learn_to_teach}{{10}{2018{b}}{{Fan et~al.}}{{Fan, Tian, Qin, Li, and Liu}}}
+\bibcite{learn_active_learn}{{11}{2017}{{Fang et~al.}}{{Fang, Li, and Cohn}}}
+\bibcite{finn2017model}{{12}{2017}{{Finn et~al.}}{{Finn, Abbeel, and Levine}}}
+\bibcite{foster-etal-2010-discriminative}{{13}{2010}{{Foster et~al.}}{{Foster, Goutte, and Kuhn}}}
+\bibcite{automate_cl_GravesBMMK17}{{14}{2017}{{Graves et~al.}}{{Graves, Bellemare, Menick, Munos, and Kavukcuoglu}}}
+\bibcite{grezl2007probabilistic}{{15}{2007}{{Gr{\'e}zl et~al.}}{{Gr{\'e}zl, Karafi{\'a}t, Kont{\'a}r, and Cernocky}}}
+\bibcite{res_net}{{16}{2016}{{He et~al.}}{{He, Zhang, Ren, and Sun}}}
+\bibcite{batch_norm}{{17}{2015}{{Ioffe \& Szegedy}}{{Ioffe and Szegedy}}}
+\bibcite{jiang-zhai-2007-instance}{{18}{2007}{{Jiang \& Zhai}}{{Jiang and Zhai}}}
+\bibcite{spcl}{{19}{2015}{{Jiang et~al.}}{{Jiang, Meng, Zhao, Shan, and Hauptmann}}}
+\bibcite{mentornet}{{20}{2018}{{Jiang et~al.}}{{Jiang, Zhou, Leung, Li, and Fei{-}Fei}}}
+\bibcite{adam}{{21}{2015}{{Kingma \& Ba}}{{Kingma and Ba}}}
+\bibcite{submodular_mt}{{22}{2014}{{Kirchhoff \& Bilmes}}{{Kirchhoff and Bilmes}}}
+\bibcite{imagenet_generalize_better}{{23}{2019}{{Kornblith et~al.}}{{Kornblith, Shlens, and Le}}}
+\bibcite{cifar10}{{24}{2009}{{Krizhevsky}}{{}}}
+\bibcite{rl_nmt}{{25}{2019}{{Kumar et~al.}}{{Kumar, Foster, Cherry, and Krikun}}}
+\bibcite{spl_kumar}{{26}{2010}{{Kumar et~al.}}{{Kumar, Packer, and Koller}}}
+\bibcite{spl_visual_category}{{27}{2011}{{Lee \& Grauman}}{{Lee and Grauman}}}
+\bibcite{lipton2018detecting}{{28}{2018}{{Lipton et~al.}}{{Lipton, Wang, and Smola}}}
+\bibcite{darts}{{29}{2019{a}}{{Liu et~al.}}{{Liu, Simonyan, and Yang}}}
+\bibcite{meta_aux_learn}{{30}{2019{b}}{{Liu et~al.}}{{Liu, Davison, and Johns}}}
+\bibcite{cosine_lr}{{31}{2017}{{Loshchilov \& Hutter}}{{Loshchilov and Hutter}}}
+\bibcite{moore2010intelligent}{{32}{2010}{{Moore \& Lewis}}{{Moore and Lewis}}}
+\bibcite{nesterov}{{33}{1983}{{Nesterov}}{{}}}
+\bibcite{rapid_adapt_nmt}{{34}{2018}{{Neubig \& Hu}}{{Neubig and Hu}}}
+\bibcite{domain_adapt_transfer}{{35}{2018}{{Ngiam et~al.}}{{Ngiam, Peng, Vasudevan, Kornblith, Le, and Pang}}}
+\bibcite{bleu}{{36}{2002}{{Papineni et~al.}}{{Papineni, Roukos, Ward, and Zhu}}}
+\bibcite{pham-etal-2018-fixing}{{37}{2018}{{Pham et~al.}}{{Pham, Crego, Senellart, and Yvon}}}
+\bibcite{platanios19naacl}{{38}{2019}{{Platanios et~al.}}{{Platanios, Stretcu, Neubig, Poczos, and Mitchell}}}
+\bibcite{ted_pretrain_emb}{{39}{2018}{{Qi et~al.}}{{Qi, Sachan, Felix, Padmanabhan, and Neubig}}}
+\bibcite{learn_reweight}{{40}{2018}{{Ren et~al.}}{{Ren, Zeng, Yang, and Urtasun}}}
+\bibcite{imagenet}{{41}{2015}{{Russakovsky et~al.}}{{Russakovsky, Deng, Su, Krause, Satheesh, Ma, Huang, Karpathy, Khosla, Bernstein, Berg, and Fei-Fei}}}
+\bibcite{lownmt19}{{42}{2019}{{Sennrich \& Zhang}}{{Sennrich and Zhang}}}
+\bibcite{shimodaira2000improving}{{43}{2000}{{Shimodaira}}{{}}}
+\bibcite{importance_weight}{{44}{2017}{{Sivasankaran et~al.}}{{Sivasankaran, Vincent, and Illina.}}}
+\bibcite{SpitkovskyAJ10}{{45}{2010}{{Spitkovsky et~al.}}{{Spitkovsky, Alshawi, and Jurafsky}}}
+\bibcite{dropout}{{46}{2014}{{Srivastava et~al.}}{{Srivastava, Hinton, Krizhevsky, Sutskever, and Salakhutdinov}}}
+\bibcite{learn_mix_submodular}{{47}{2014}{{Tschiatschek et~al.}}{{Tschiatschek, Iyer, Wei, and Bilmes}}}
+\bibcite{baysian_curriculum}{{48}{2016}{{Tsvetkov et~al.}}{{Tsvetkov, Faruqui, Ling, MacWhinney, and Dyer}}}
+\bibcite{dynamic_data_selection_nmt}{{49}{2017}{{van~der Wees et~al.}}{{van~der Wees, Bisazza, and Monz}}}
+\bibcite{vaswani2017attention}{{50}{2017}{{Vaswani et~al.}}{{Vaswani, Shazeer, Parmar, Uszkoreit, Jones, Gomez, Kaiser, and Polosukhin}}}
+\bibcite{vyas-etal-2018-identifying}{{51}{2018}{{Vyas et~al.}}{{Vyas, Niu, and Carpuat}}}
+\bibcite{wang-etal-2017-instance}{{52}{}{{Wang et~al.}}{{Wang, Utiyama, Liu, Chen, and Sumita}}}
+\bibcite{dynamic}{{53}{2019{a}}{{Wang et~al.}}{{Wang, Caswell, and Chelba}}}
+\bibcite{TCS}{{54}{2019}{{Wang \& Neubig}}{{Wang and Neubig}}}
+\bibcite{sde}{{55}{2019{b}}{{Wang et~al.}}{{Wang, Pham, Arthur, and Neubig}}}
+\bibcite{reinforce}{{56}{1992}{{Williams}}{{}}}
+\bibcite{reinforce_cotrain}{{57}{2018}{{Wu et~al.}}{{Wu, Li, and Wang}}}
+\bibcite{resnext}{{58}{2017}{{Xie et~al.}}{{Xie, Girshick, Doll{\'a}r, Tu, and He}}}
+\bibcite{wide_res_net}{{59}{2016}{{Zagoruyko \& Komodakis}}{{Zagoruyko and Komodakis}}}
+\bibcite{overfit_random_examples}{{60}{2017}{{Zhang et~al.}}{{Zhang, Bengio, Hardt, Recht, and Vinyals}}}
+\bibcite{zhang2016boosting}{{61}{2016}{{Zhang et~al.}}{{Zhang, Kim, Crego, and Senellart}}}
+\bibcite{zhang2018empirical}{{62}{2018}{{Zhang et~al.}}{{Zhang, Kumar, Khayrallah, Murray, Gwinnup, Martindale, McNamee, Duh, and Carpuat}}}
+\bibcite{nmt_transfer}{{63}{2016}{{Zoph et~al.}}{{Zoph, Yuret, May, and Knight}}}
 \bibstyle{icml2019}
 \citation{adam}
 \citation{nesterov}
-\citation{adam}
-\citation{reinforce}
 \citation{adam}
 \newlabel{app}{{A}{11}{}{appendix.A}{}}
 \newlabel{app:grad_of_optimizers}{{A.1}{11}{}{subsection.A.1}{}}
@@ -181,16 +181,18 @@
 \newlabel{eqn:psi_update_rule}{{10}{11}{}{equation.A.10}{}}
 \newlabel{eqn:sgd_update}{{11}{11}{}{equation.A.11}{}}
 \newlabel{eqn:momentum_update_g}{{12}{11}{}{equation.A.12}{}}
-\newlabel{eqn:momentum_update_for_psi}{{13}{11}{}{equation.A.13}{}}
-\newlabel{eqn:momentum_update}{{14}{11}{}{equation.A.14}{}}
-\newlabel{eqn:momentum_update_g}{{15}{11}{}{equation.A.15}{}}
-\newlabel{eqn:adam_update}{{16}{11}{}{equation.A.16}{}}
-\newlabel{eqn:adam_update_g}{{17}{11}{}{equation.A.17}{}}
+\citation{reinforce}
+\citation{adam}
 \citation{cosine_lr}
-\citation{imagenet_generalize_better}
-\citation{batch_norm}
-\citation{res_net}
+\newlabel{eqn:momentum_update_for_psi}{{13}{12}{}{equation.A.13}{}}
+\newlabel{eqn:momentum_update}{{14}{12}{}{equation.A.14}{}}
+\newlabel{eqn:momentum_update_g}{{15}{12}{}{equation.A.15}{}}
+\newlabel{eqn:adam_update}{{16}{12}{}{equation.A.16}{}}
+\newlabel{eqn:adam_update_g}{{17}{12}{}{equation.A.17}{}}
 \newlabel{app:nmt_hparam}{{A.2}{12}{}{subsection.A.2}{}}
 \newlabel{app:nmt_data}{{A.3}{12}{}{subsection.A.3}{}}
 \newlabel{app:image_hparam}{{A.4}{12}{}{subsection.A.4}{}}
+\citation{imagenet_generalize_better}
+\citation{batch_norm}
+\citation{res_net}
 \newlabel{tab:nmt_data}{{2}{13}{Statistics of the multilingual NMT datasets}{table.2}{}}
