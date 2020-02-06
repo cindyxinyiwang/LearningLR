@@ -69,7 +69,7 @@ This reveals a linear dependency of $g$ on $\nabla_\theta J(\theta_{t-1, \psi})$
   \end{aligned}
 \end{equation}
 %\gn{This last paragraph was too dense for me to follow: could you please try to explain a little more?}
-Here, the last equation follows from the log-derivative trick in the REINFORCE algorithm~\citep{reinforce}. We can consider the alignment of dev set and training data gradients as the reward for update $\psi$. In practice, we found that using cosine distance is more stable than simply taking dot product between the gradients. Thus in our implementation of the image classification and machine translation algorithms, we use $\text{cos}\left(J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right)$ as the reward signal.
+Here, the last equation follows from the log-derivative trick in the REINFORCE algorithm~\citep{reinforce}. We can consider the alignment of dev set and training data gradients as the reward for update $\psi$. In practice, we found that using cosine distance is more stable than simply taking dot product between the gradients. Thus in our implementation of the machine translation algorithm, we use $\text{cos}\left(J(\theta_t, \mathcal{D}_\text{dev})^\top \cdot \nabla_\theta \ell(x, y; \theta_{t-1} ) \right)$ as the reward signal.
 %and can be implemented by Monte Carlo approximation.
 %\gn{again, a little more detail here would be useful}. 
 %Note we do not do reinforcement learning in this paper. Instead \gn{this ``instead'' was also not clear to me.}, we simply utilize the same log-derivative trick to compute $\nabla_\psi J(\theta_t, \mathcal{D}_\text{dev})$. 
